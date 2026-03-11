@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash skills/vibe-kanban/scripts/check-tasks.sh ${AGENT_NAME:-claude-agent} ${KANBAN_URL:-http://localhost:3001}"
+          }
+        ]
+      }
+    ]
+  }
+}
