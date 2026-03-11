@@ -59,14 +59,13 @@ export function BoardHeader({
         </Select>
         {board && (
           <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9"
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5"
             onClick={() => setIsAgentOpen(true)}
-            aria-label="Agent onboarding"
-            title="Setup agent"
           >
             <Bot className="h-4 w-4" />
+            Agent Setup
           </Button>
         )}
         <Button
