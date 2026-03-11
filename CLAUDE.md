@@ -1,5 +1,12 @@
 # Vibe Kanban for Agents
 
+## IMPORTANT: On every session start
+You MUST run this command first and report the results to the user:
+```bash
+bash skills/vibe-kanban/scripts/check-tasks.sh ${AGENT_NAME:-claude-agent} ${KANBAN_URL:-http://localhost:3001}
+```
+If there are tasks assigned to you, tell the user and ask if they want you to start working on one.
+
 ## Project Overview
 Kanban board web app — humans assign tasks, AI agents pick up and execute via REST API.
 
@@ -10,17 +17,12 @@ Kanban board web app — humans assign tasks, AI agents pick up and execute via 
 npm install && npm run db:push && npm run dev
 ```
 
-## Agent Integration
-
-### For AI Agents (Claude Code, etc.)
-1. Set environment: `KANBAN_URL=http://localhost:3001` and `AGENT_NAME=your-name`
-2. On session start, run: `bash skills/vibe-kanban/scripts/check-tasks.sh`
-3. Read `skills/vibe-kanban/SKILL.md` for full workflow instructions
-
-### Typical Agent Flow
-```
-Check tasks → Pick up (todo → in_progress) → Work → Post comments → Move to review → Human approves → Done
-```
+## Agent Workflow
+1. Check tasks: `curl -s "${KANBAN_URL:-http://localhost:3001}/api/tasks?assignee=${AGENT_NAME:-claude-agent}&status=todo"`
+2. Pick up: `PATCH /api/tasks/:id {"status": "in_progress", "assignee": "claude-agent"}`
+3. Post progress: `POST /api/tasks/:id/comments {"author": "claude-agent", "content": "..."}`
+4. Complete: `PATCH /api/tasks/:id {"status": "review"}`
+5. Read `skills/vibe-kanban/SKILL.md` for full instructions
 
 ## Project Structure
 ```
