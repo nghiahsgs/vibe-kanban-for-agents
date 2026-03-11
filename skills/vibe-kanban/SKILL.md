@@ -71,12 +71,13 @@ curl -s -X PATCH "${KANBAN_URL:-http://localhost:3001}/api/tasks/${TASK_ID}" \
 
 ## Behavior Rules
 
-1. **Always check tasks on session start** — Run the check script silently
+1. **Auto-pickup**: When you find todo tasks, immediately pick up the highest priority one. Do NOT ask user which task — just start working
 2. **One task at a time** — Pick up one task, finish it, then pick next
 3. **Post progress** — Comment when: starting, hitting milestones, blocked, done
 4. **Move to Review (not Done)** — Let human verify before marking Done
 5. **Read task description carefully** — It contains the requirements
 6. **If blocked, comment and ask** — Don't silently fail
+7. **Auto-continue** — After finishing one task, check for next task and start immediately
 
 ## Slash Commands
 
