@@ -1,52 +1,61 @@
 # Vibe Kanban for Agents
 
-## IMPORTANT: Agent Behavior Rules
-
-### On session start or when checking tasks:
-1. Run: `bash skills/vibe-kanban/scripts/check-tasks.sh ${AGENT_NAME:-claude-agent} ${KANBAN_URL:-http://localhost:3001}`
-2. If there are **todo** tasks → **automatically pick up the highest priority one** and start working
-3. If there are **in_progress** tasks → **continue working** on them
-4. Do NOT ask the user "which task do you want me to do?" — just do it
-
-### Auto-pilot workflow (DO NOT ask permission, just execute):
-1. **Pick up**: `curl -s -X PATCH "${KANBAN_URL:-http://localhost:3001}/api/tasks/${TASK_ID}" -H "Content-Type: application/json" -d '{"status": "in_progress"}'`
-2. **Comment start**: `curl -s -X POST "${KANBAN_URL:-http://localhost:3001}/api/tasks/${TASK_ID}/comments" -H "Content-Type: application/json" -d '{"author": "${AGENT_NAME:-claude-agent}", "content": "Starting work on this task"}'`
-3. **Do the actual work** described in the task title/description
-4. **Comment progress** at milestones
-5. **Move to review**: `curl -s -X PATCH "${KANBAN_URL:-http://localhost:3001}/api/tasks/${TASK_ID}" -H "Content-Type: application/json" -d '{"status": "review"}'`
-6. **Comment completion**: Post summary of what was done
-7. **Pick up next task** if there are more
-
-### Priority order: high > medium > low
-
 ## Project Overview
 Kanban board web app — humans assign tasks, AI agents pick up and execute via REST API.
+Supports **multi-board** with per-board API keys for agent auth.
 
-**Tech:** Next.js 15, SQLite (better-sqlite3), Drizzle ORM, Tailwind v4, shadcn/ui, @hello-pangea/dnd
+**Tech:** Next.js 15, PostgreSQL (Supabase), Drizzle ORM, Tailwind v4, shadcn/ui, @hello-pangea/dnd
 
 ## Quick Start
 ```bash
 npm install && npm run db:push && npm run dev
 ```
 
+## Agent Setup
+1. Open board in browser → click **"Agent Setup"** button
+2. Click 🔄 to generate API key → prompt auto-fills
+3. Copy the generated prompt → paste into Claude Code (or any AI agent)
+4. Agent will auto-poll for tasks, pick up highest priority, execute, and report progress
+
 ## Project Structure
 ```
 src/
-  app/api/tasks/         — REST API (7 endpoints)
-  components/board/      — Kanban UI components
-  components/task/       — Task management dialogs
-  db/                    — SQLite + Drizzle schema
-  hooks/                 — TanStack Query hooks
-  lib/                   — Utilities, API helpers
+  app/api/boards/        — Board CRUD + board-scoped task APIs
+  app/api/tasks/         — Legacy task API (backward compat)
+  app/boards/[slug]/     — Board page (URL routing)
+  components/board/      — Kanban UI, board switcher, agent onboarding
+  components/task/       — Task form, detail, comments
+  db/                    — PostgreSQL + Drizzle schema
+  hooks/                 — TanStack Query hooks (boards + tasks)
+  lib/                   — Auth, API helpers, prompt templates
   types/                 — TypeScript types
-skills/vibe-kanban/      — Agent skill definition + scripts
 ```
 
 ## API Endpoints
-- `GET /api/tasks` — List (filter: ?assignee=, ?status=, ?priority=)
-- `GET /api/tasks/:id` — Get task
+
+### Board Management (session auth)
+- `GET /api/boards` — List user's boards
+- `POST /api/boards` — Create board
+- `GET /api/boards/:slug` — Get board
+- `PATCH /api/boards/:slug` — Update board
+- `DELETE /api/boards/:slug` — Delete board
+- `POST /api/boards/:slug/regenerate-key` — Regenerate board API key
+
+### Board-Scoped Tasks (session or board API key auth)
+- `GET /api/boards/:slug/tasks` — List tasks (filter: ?assignee=, ?status=, ?priority=)
+- `POST /api/boards/:slug/tasks` — Create task
+- `GET /api/boards/:slug/tasks/:id` — Get task
+- `PATCH /api/boards/:slug/tasks/:id` — Update task
+- `DELETE /api/boards/:slug/tasks/:id` — Delete task
+- `GET /api/boards/:slug/tasks/:id/comments` — List comments
+- `POST /api/boards/:slug/tasks/:id/comments` — Add comment
+
+### Legacy (backward compat — resolves to default board)
+- `GET /api/tasks` — List tasks
 - `POST /api/tasks` — Create task
-- `PATCH /api/tasks/:id` — Update task
-- `DELETE /api/tasks/:id` — Delete task
-- `GET /api/tasks/:id/comments` — List comments
-- `POST /api/tasks/:id/comments` — Add comment
+- `GET/PATCH/DELETE /api/tasks/:id` — Task CRUD
+- `GET/POST /api/tasks/:id/comments` — Comments
+
+### Auth
+- Board API key: `Authorization: Bearer vk_xxx`
+- Session: automatic via cookies

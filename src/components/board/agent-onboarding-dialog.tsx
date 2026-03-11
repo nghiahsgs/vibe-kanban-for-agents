@@ -126,9 +126,11 @@ export function AgentOnboardingDialog({ board, open, onOpenChange }: AgentOnboar
                 <RefreshCw className={`h-4 w-4 ${regenerateKey.isPending ? "animate-spin" : ""}`} />
               </Button>
             </div>
-            {!board.keyPrefix && !apiKey && (
+            {!apiKey && (
               <p className="text-xs text-amber-600 dark:text-amber-400">
-                No API key set. Regenerate one or agents will need session auth.
+                {board.keyPrefix
+                  ? "Click 🔄 to regenerate a new key (the old one will be replaced)"
+                  : "No API key set — click 🔄 to generate one"}
               </p>
             )}
           </div>
