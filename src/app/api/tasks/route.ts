@@ -8,11 +8,14 @@ import {
   validateRequired,
   validateTaskFields,
 } from "@/lib/api-helpers";
+import { getAuthUser } from "@/lib/auth-helpers";
 import type { TaskStatus, TaskPriority } from "@/types";
 
 /** GET /api/tasks — list tasks with optional filters */
 export async function GET(request: Request) {
   try {
+    const authUser = await getAuthUser();
+    if (!authUser) return errorResponse(401, "Unauthorized", "Valid session or API key required");
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") as TaskStatus | null;
     const assignee = searchParams.get("assignee");
@@ -24,12 +27,11 @@ export async function GET(request: Request) {
     if (priority) conditions.push(eq(tasks.priority, priority));
 
     const where = conditions.length > 0 ? and(...conditions) : undefined;
-    const result = db
+    const result = await db
       .select()
       .from(tasks)
       .where(where)
-      .orderBy(asc(tasks.position))
-      .all();
+      .orderBy(asc(tasks.position));
 
     return jsonResponse({ tasks: result });
   } catch (error) {
@@ -40,6 +42,9 @@ export async function GET(request: Request) {
 /** POST /api/tasks — create a new task */
 export async function POST(request: Request) {
   try {
+    const authUser = await getAuthUser();
+    if (!authUser) return errorResponse(401, "Unauthorized", "Valid session or API key required");
+
     const body = await request.json();
 
     const missingField = validateRequired(body, ["title"]);
@@ -57,12 +62,12 @@ export async function POST(request: Request) {
       status,
       assignee: (body.assignee as string) || null,
       priority: (body.priority as TaskPriority) || "medium",
-      position: typeof body.position === "number" ? body.position : getNextPosition(status),
+      position: typeof body.position === "number" ? body.position : await getNextPosition(status),
       createdAt: now,
       updatedAt: now,
     };
 
-    db.insert(tasks).values(newTask).run();
+    await db.insert(tasks).values(newTask);
     return jsonResponse(newTask, 201);
   } catch (error) {
     return errorResponse(500, "Internal Error", String(error));

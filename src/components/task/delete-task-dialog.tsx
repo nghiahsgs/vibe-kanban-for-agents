@@ -15,12 +15,13 @@ import { toast } from "sonner";
 
 interface DeleteTaskDialogProps {
   taskId: string;
+  taskTitle?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onDeleted: () => void;
 }
 
-export function DeleteTaskDialog({ taskId, open, onOpenChange, onDeleted }: DeleteTaskDialogProps) {
+export function DeleteTaskDialog({ taskId, taskTitle, open, onOpenChange, onDeleted }: DeleteTaskDialogProps) {
   const deleteTask = useDeleteTask();
 
   function handleDelete() {
@@ -39,13 +40,21 @@ export function DeleteTaskDialog({ taskId, open, onOpenChange, onDeleted }: Dele
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete task?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This will permanently delete the task and all its comments. This action cannot be undone.
+          <AlertDialogDescription className="space-y-1">
+            {taskTitle && (
+              <span className="block font-medium text-foreground">&ldquo;{taskTitle}&rdquo;</span>
+            )}
+            <span className="block">
+              This will permanently delete the task and all its comments. This action cannot be undone.
+            </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogAction
+            onClick={handleDelete}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

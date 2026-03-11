@@ -6,14 +6,13 @@ import type { TaskStatus } from "@/types";
 const POSITION_GAP = 1000;
 
 /** Get next position for appending to end of a column */
-export function getNextPosition(status: TaskStatus): number {
-  const last = db
+export async function getNextPosition(status: TaskStatus): Promise<number> {
+  const [last] = await db
     .select({ position: tasks.position })
     .from(tasks)
     .where(eq(tasks.status, status))
     .orderBy(desc(tasks.position))
-    .limit(1)
-    .get();
+    .limit(1);
 
   return last ? last.position + POSITION_GAP : POSITION_GAP;
 }

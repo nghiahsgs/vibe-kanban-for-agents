@@ -1,6 +1,6 @@
-import { sqliteTable, text, real } from "drizzle-orm/sqlite-core";
+import { pgTable, text, real } from "drizzle-orm/pg-core";
 
-export const tasks = sqliteTable("tasks", {
+export const tasks = pgTable("tasks", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description"),
@@ -22,7 +22,7 @@ export const tasks = sqliteTable("tasks", {
     .$defaultFn(() => new Date().toISOString()),
 });
 
-export const comments = sqliteTable("comments", {
+export const comments = pgTable("comments", {
   id: text("id").primaryKey(),
   taskId: text("task_id")
     .notNull()
@@ -33,3 +33,5 @@ export const comments = sqliteTable("comments", {
     .notNull()
     .$defaultFn(() => new Date().toISOString()),
 });
+
+export * from "./auth-schema";

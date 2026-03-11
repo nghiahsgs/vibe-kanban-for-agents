@@ -30,7 +30,7 @@ export function CommentForm({ taskId }: CommentFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2 mt-3">
+    <form onSubmit={handleSubmit} className="space-y-3 pt-1">
       <Input
         placeholder="Your name"
         value={author}
@@ -41,16 +41,18 @@ export function CommentForm({ taskId }: CommentFormProps) {
         placeholder="Add a comment..."
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        rows={2}
-        className="text-sm"
+        rows={3}
+        className="text-sm resize-none"
       />
-      <Button
-        type="submit"
-        size="sm"
-        disabled={createComment.isPending || !author.trim() || !content.trim()}
-      >
-        {createComment.isPending ? "Posting..." : "Comment"}
-      </Button>
+      <div className="flex justify-end">
+        <Button
+          type="submit"
+          size="sm"
+          disabled={createComment.isPending || !author.trim() || !content.trim()}
+        >
+          {createComment.isPending ? "Posting..." : "Comment"}
+        </Button>
+      </div>
     </form>
   );
 }

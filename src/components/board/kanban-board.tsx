@@ -91,7 +91,7 @@ export function KanbanBoard() {
       />
 
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex gap-5 overflow-x-auto pb-4">
           {COLUMNS.map((col) => (
             <BoardColumn
               key={col.id}

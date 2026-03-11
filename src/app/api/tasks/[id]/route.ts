@@ -6,14 +6,18 @@ import {
   errorResponse,
   validateTaskFields,
 } from "@/lib/api-helpers";
+import { getAuthUser } from "@/lib/auth-helpers";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
 /** GET /api/tasks/:id — get single task */
 export async function GET(_request: Request, { params }: RouteParams) {
   try {
+    const authUser = await getAuthUser();
+    if (!authUser) return errorResponse(401, "Unauthorized", "Valid session or API key required");
+
     const { id } = await params;
-    const task = db.select().from(tasks).where(eq(tasks.id, id)).get();
+    const [task] = await db.select().from(tasks).where(eq(tasks.id, id)).limit(1);
     if (!task) return errorResponse(404, "Not Found", `Task ${id} not found`, `/api/tasks/${id}`);
     return jsonResponse(task);
   } catch (error) {
@@ -24,8 +28,11 @@ export async function GET(_request: Request, { params }: RouteParams) {
 /** PATCH /api/tasks/:id — partial update */
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
+    const authUser = await getAuthUser();
+    if (!authUser) return errorResponse(401, "Unauthorized", "Valid session or API key required");
+
     const { id } = await params;
-    const existing = db.select().from(tasks).where(eq(tasks.id, id)).get();
+    const [existing] = await db.select().from(tasks).where(eq(tasks.id, id)).limit(1);
     if (!existing) return errorResponse(404, "Not Found", `Task ${id} not found`, `/api/tasks/${id}`);
 
     const body = await request.json();
@@ -39,8 +46,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       if (body[field] !== undefined) updates[field] = body[field];
     }
 
-    db.update(tasks).set(updates).where(eq(tasks.id, id)).run();
-    const updated = db.select().from(tasks).where(eq(tasks.id, id)).get();
+    await db.update(tasks).set(updates).where(eq(tasks.id, id));
+    const [updated] = await db.select().from(tasks).where(eq(tasks.id, id)).limit(1);
     return jsonResponse(updated);
   } catch (error) {
     return errorResponse(500, "Internal Error", String(error));
@@ -50,11 +57,14 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 /** DELETE /api/tasks/:id — delete task (cascades comments) */
 export async function DELETE(_request: Request, { params }: RouteParams) {
   try {
+    const authUser = await getAuthUser();
+    if (!authUser) return errorResponse(401, "Unauthorized", "Valid session or API key required");
+
     const { id } = await params;
-    const existing = db.select().from(tasks).where(eq(tasks.id, id)).get();
+    const [existing] = await db.select().from(tasks).where(eq(tasks.id, id)).limit(1);
     if (!existing) return errorResponse(404, "Not Found", `Task ${id} not found`, `/api/tasks/${id}`);
 
-    db.delete(tasks).where(eq(tasks.id, id)).run();
+    await db.delete(tasks).where(eq(tasks.id, id));
     return new Response(null, { status: 204 });
   } catch (error) {
     return errorResponse(500, "Internal Error", String(error));
