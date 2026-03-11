@@ -19,10 +19,11 @@ interface DeleteTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onDeleted: () => void;
+  boardSlug?: string;
 }
 
-export function DeleteTaskDialog({ taskId, taskTitle, open, onOpenChange, onDeleted }: DeleteTaskDialogProps) {
-  const deleteTask = useDeleteTask();
+export function DeleteTaskDialog({ taskId, taskTitle, open, onOpenChange, onDeleted, boardSlug }: DeleteTaskDialogProps) {
+  const deleteTask = useDeleteTask(boardSlug);
 
   function handleDelete() {
     deleteTask.mutate(taskId, {

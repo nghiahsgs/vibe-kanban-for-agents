@@ -34,9 +34,9 @@ export function BoardColumn({ status, label, tasks, onTaskClick }: BoardColumnPr
   const config = columnConfig[status] || columnConfig.todo;
 
   return (
-    <div className="flex flex-col w-[280px] shrink-0 rounded-xl border border-border/40 bg-muted/40 dark:bg-muted/20">
+    <div className="flex flex-col w-[280px] shrink-0 rounded-xl border border-white/5 bg-muted/40 dark:bg-muted/20 backdrop-blur-sm">
       {/* Column header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-border/30">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5">
         <span className={`w-2 h-2 rounded-full shrink-0 ${config.dot}`} />
         <h2 className="font-bold text-sm text-foreground">{label}</h2>
         <span className={`ml-auto text-xs font-semibold tabular-nums px-1.5 py-0.5 rounded-full ${config.count}`}>
@@ -50,15 +50,16 @@ export function BoardColumn({ status, label, tasks, onTaskClick }: BoardColumnPr
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex-1 min-h-[200px] p-2 transition-colors rounded-b-xl ${
+            className={`flex-1 min-h-[200px] p-3 transition-colors rounded-b-xl ${
               snapshot.isDraggingOver
                 ? "border-2 border-dashed border-primary/30 bg-primary/5"
                 : ""
             }`}
           >
             {tasks.length === 0 && !snapshot.isDraggingOver && (
-              <div className="flex items-center justify-center h-full min-h-[160px]">
-                <p className="text-xs text-muted-foreground/50">No tasks</p>
+              <div className="flex flex-col items-center justify-center h-full min-h-[160px] gap-1.5">
+                <p className="text-xs font-medium text-muted-foreground/50">No tasks yet</p>
+                <p className="text-xs text-muted-foreground/30">Drop here</p>
               </div>
             )}
             {tasks.map((task, index) => (

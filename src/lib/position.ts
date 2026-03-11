@@ -1,16 +1,19 @@
 import { db } from "@/db";
 import { tasks } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import type { TaskStatus } from "@/types";
 
 const POSITION_GAP = 1000;
 
-/** Get next position for appending to end of a column */
-export async function getNextPosition(status: TaskStatus): Promise<number> {
+/** Get next position for appending to end of a column, optionally scoped to a board */
+export async function getNextPosition(status: TaskStatus, boardId?: string): Promise<number> {
+  const conditions = [eq(tasks.status, status)];
+  if (boardId) conditions.push(eq(tasks.boardId, boardId));
+
   const [last] = await db
     .select({ position: tasks.position })
     .from(tasks)
-    .where(eq(tasks.status, status))
+    .where(and(...conditions))
     .orderBy(desc(tasks.position))
     .limit(1);
 

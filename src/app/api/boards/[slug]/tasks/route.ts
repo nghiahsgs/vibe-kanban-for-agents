@@ -12,14 +12,17 @@ import { getAuthUser } from "@/lib/auth-helpers";
 import { resolveBoard } from "@/lib/board-helpers";
 import type { TaskStatus, TaskPriority } from "@/types";
 
-/** GET /api/tasks — list tasks with optional filters (board-scoped via default board) */
-export async function GET(request: Request) {
+type RouteParams = { params: Promise<{ slug: string }> };
+
+/** GET /api/boards/:slug/tasks — list board-scoped tasks */
+export async function GET(request: Request, { params }: RouteParams) {
   try {
     const authUser = await getAuthUser();
     if (!authUser) return errorResponse(401, "Unauthorized", "Valid session or API key required");
 
-    const board = await resolveBoard(authUser);
-    if (!board) return errorResponse(404, "Not Found", "No board found for this user");
+    const { slug } = await params;
+    const board = await resolveBoard(authUser, slug);
+    if (!board) return errorResponse(404, "Not Found", `Board '${slug}' not found`);
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") as TaskStatus | null;
@@ -43,17 +46,17 @@ export async function GET(request: Request) {
   }
 }
 
-/** POST /api/tasks — create a new task (auto-assigns to default board) */
-export async function POST(request: Request) {
+/** POST /api/boards/:slug/tasks — create a task on this board */
+export async function POST(request: Request, { params }: RouteParams) {
   try {
     const authUser = await getAuthUser();
     if (!authUser) return errorResponse(401, "Unauthorized", "Valid session or API key required");
 
-    const board = await resolveBoard(authUser);
-    if (!board) return errorResponse(404, "Not Found", "No board found for this user");
+    const { slug } = await params;
+    const board = await resolveBoard(authUser, slug);
+    if (!board) return errorResponse(404, "Not Found", `Board '${slug}' not found`);
 
     const body = await request.json();
-
     const missingField = validateRequired(body, ["title"]);
     if (missingField) return errorResponse(400, "Validation Failed", missingField);
 

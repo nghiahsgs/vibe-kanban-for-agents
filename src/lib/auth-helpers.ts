@@ -2,15 +2,18 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { apiKeys } from "@/db/auth-schema";
+import { boards } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hashApiKey } from "@/lib/api-key";
+import { errorResponse } from "@/lib/api-helpers";
 
 export type AuthUser = {
   userId: string;
-  authMethod: "session" | "api_key";
+  boardId?: string;
+  authMethod: "session" | "api_key" | "board_key";
 };
 
-/** Try session auth first, then API key auth */
+/** Try session auth first, then API key auth (user key or board key) */
 export async function getAuthUser(): Promise<AuthUser | null> {
   // Try session first
   const session = await auth.api.getSession({ headers: await headers() });
@@ -24,6 +27,8 @@ export async function getAuthUser(): Promise<AuthUser | null> {
   if (authHeader?.startsWith("Bearer vk_")) {
     const key = authHeader.slice(7); // Remove "Bearer "
     const keyHash = hashApiKey(key);
+
+    // Check user-level API keys
     const [keyRecord] = await db
       .select()
       .from(apiKeys)
@@ -39,8 +44,34 @@ export async function getAuthUser(): Promise<AuthUser | null> {
         .where(eq(apiKeys.id, keyRecord.id));
       return { userId: keyRecord.userId, authMethod: "api_key" };
     }
+
+    // Check board-level API keys
+    const [board] = await db
+      .select()
+      .from(boards)
+      .where(eq(boards.keyHash, keyHash))
+      .limit(1);
+    if (board) {
+      return { userId: board.userId, boardId: board.id, authMethod: "board_key" };
+    }
   }
 
+  return null;
+}
+
+/** Validate that the authUser can access the requested board.
+ *  - board_key auth: boardId is pre-bound; reject if requestBoardId mismatches
+ *  - session/api_key: no board restriction
+ *  Returns error response or null (allowed) */
+export function requireBoardId(
+  authUser: AuthUser,
+  requestBoardId?: string
+): ReturnType<typeof errorResponse> | null {
+  if (authUser.authMethod === "board_key" && authUser.boardId) {
+    if (requestBoardId && requestBoardId !== authUser.boardId) {
+      return errorResponse(403, "Forbidden", "Board key is not authorized for this board");
+    }
+  }
   return null;
 }
 

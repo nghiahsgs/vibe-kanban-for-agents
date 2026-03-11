@@ -33,9 +33,10 @@ interface TaskDetailDialogProps {
   task: Task;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  boardSlug?: string;
 }
 
-export function TaskDetailDialog({ task, open, onOpenChange }: TaskDetailDialogProps) {
+export function TaskDetailDialog({ task, open, onOpenChange, boardSlug }: TaskDetailDialogProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -96,6 +97,12 @@ export function TaskDetailDialog({ task, open, onOpenChange }: TaskDetailDialogP
                 <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">Updated</p>
                 <p className="text-sm text-muted-foreground">{new Date(task.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
               </div>
+              <div className="space-y-1">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">Working Dir</p>
+                <p className="text-sm font-mono text-muted-foreground truncate">
+                  {task.workingDirectory || "~"}
+                </p>
+              </div>
             </div>
 
             {/* Description */}
@@ -119,13 +126,14 @@ export function TaskDetailDialog({ task, open, onOpenChange }: TaskDetailDialogP
         </DialogContent>
       </Dialog>
 
-      <TaskFormDialog open={isEditOpen} onOpenChange={setIsEditOpen} task={task} />
+      <TaskFormDialog open={isEditOpen} onOpenChange={setIsEditOpen} task={task} boardSlug={boardSlug} />
       <DeleteTaskDialog
         taskId={task.id}
         taskTitle={task.title}
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
         onDeleted={() => onOpenChange(false)}
+        boardSlug={boardSlug}
       />
     </>
   );

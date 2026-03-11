@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,12 +12,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserMenu } from "@/components/auth/user-menu";
+import { BoardSwitcher } from "./board-switcher";
+import { AgentOnboardingDialog } from "./agent-onboarding-dialog";
+import type { Board } from "@/types";
 
 interface BoardHeaderProps {
   onNewTask: () => void;
   filterAssignee: string | null;
   onFilterChange: (value: string | null) => void;
   assignees: string[];
+  boardSlug?: string;
+  board?: Board | null;
 }
 
 export function BoardHeader({
@@ -24,8 +30,11 @@ export function BoardHeader({
   filterAssignee,
   onFilterChange,
   assignees,
+  boardSlug,
+  board,
 }: BoardHeaderProps) {
   const { theme, setTheme } = useTheme();
+  const [isAgentOpen, setIsAgentOpen] = useState(false);
 
   function toggleTheme() {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -33,7 +42,7 @@ export function BoardHeader({
 
   return (
     <div className="flex items-center justify-between mb-8">
-      <h1 className="text-xl font-bold tracking-tight">Vibe Kanban</h1>
+      <BoardSwitcher currentBoardSlug={boardSlug} />
       <div className="flex items-center gap-2">
         <Select value={filterAssignee ?? "all"} onValueChange={onFilterChange}>
           <SelectTrigger className="w-[160px] h-9 text-sm">
@@ -48,6 +57,18 @@ export function BoardHeader({
             ))}
           </SelectContent>
         </Select>
+        {board && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setIsAgentOpen(true)}
+            aria-label="Agent onboarding"
+            title="Setup agent"
+          >
+            <Bot className="h-4 w-4" />
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon"
@@ -57,11 +78,23 @@ export function BoardHeader({
         >
           {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>
-        <Button onClick={onNewTask} size="sm" className="h-9">
+        <Button
+          onClick={onNewTask}
+          size="sm"
+          className="h-9 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0"
+        >
           + New Task
         </Button>
         <UserMenu />
       </div>
+
+      {board && (
+        <AgentOnboardingDialog
+          board={board}
+          open={isAgentOpen}
+          onOpenChange={setIsAgentOpen}
+        />
+      )}
     </div>
   );
 }

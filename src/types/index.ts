@@ -1,14 +1,27 @@
 export type TaskStatus = "todo" | "in_progress" | "review" | "done";
 export type TaskPriority = "low" | "medium" | "high";
 
+export interface Board {
+  id: string;
+  userId: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  keyPrefix: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Task {
   id: string;
+  boardId: string;
   title: string;
   description: string | null;
   status: TaskStatus;
   assignee: string | null;
   priority: TaskPriority;
   position: number;
+  workingDirectory: string | null;
   createdAt: string;
   updatedAt: string;
 }

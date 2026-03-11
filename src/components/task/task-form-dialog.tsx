@@ -25,11 +25,12 @@ interface TaskFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   task?: Task | null; // If provided, edit mode
+  boardSlug?: string;
 }
 
-export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps) {
-  const createTask = useCreateTask();
-  const updateTask = useUpdateTask();
+export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskFormDialogProps) {
+  const createTask = useCreateTask(boardSlug);
+  const updateTask = useUpdateTask(boardSlug);
   const isEdit = !!task;
 
   const [title, setTitle] = useState("");
@@ -37,6 +38,7 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
   const [status, setStatus] = useState("todo");
   const [assignee, setAssignee] = useState("");
   const [priority, setPriority] = useState("medium");
+  const [workingDirectory, setWorkingDirectory] = useState("");
 
   // Pre-fill form when editing
   useEffect(() => {
@@ -46,12 +48,14 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
       setStatus(task.status);
       setAssignee(task.assignee || "");
       setPriority(task.priority);
+      setWorkingDirectory(task.workingDirectory || "");
     } else {
       setTitle("");
       setDescription("");
       setStatus("todo");
       setAssignee("");
       setPriority("medium");
+      setWorkingDirectory("");
     }
   }, [task, open]);
 
@@ -65,6 +69,7 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
       status: status as Task["status"],
       assignee: assignee.trim() || undefined,
       priority: priority as Task["priority"],
+      workingDirectory: workingDirectory.trim() || undefined,
     };
 
     if (isEdit) {
@@ -166,6 +171,19 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
               placeholder="Assign to..."
               value={assignee}
               onChange={(e) => setAssignee(e.target.value)}
+            />
+          </div>
+
+          {/* Working Directory */}
+          <div className="space-y-1.5">
+            <label htmlFor="task-working-dir" className="text-sm font-medium">
+              Working Directory
+            </label>
+            <Input
+              id="task-working-dir"
+              placeholder="/path/to/project (default: ~)"
+              value={workingDirectory}
+              onChange={(e) => setWorkingDirectory(e.target.value)}
             />
           </div>
 

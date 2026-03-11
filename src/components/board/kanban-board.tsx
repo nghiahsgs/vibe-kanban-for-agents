@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import { useTasks, useUpdateTask } from "@/hooks/use-tasks";
+import { useBoard } from "@/hooks/use-boards";
 import { BoardColumn } from "./board-column";
 import { BoardHeader } from "./board-header";
 import { BoardSkeleton } from "./board-skeleton";
@@ -12,9 +13,14 @@ import { COLUMNS, type TaskStatus } from "@/types";
 import { calculateMidPosition } from "@/lib/position-client";
 import { toast } from "sonner";
 
-export function KanbanBoard() {
-  const { data: tasks, isLoading } = useTasks();
-  const updateTask = useUpdateTask();
+interface KanbanBoardProps {
+  boardSlug?: string;
+}
+
+export function KanbanBoard({ boardSlug }: KanbanBoardProps) {
+  const { data: tasks, isLoading } = useTasks(boardSlug);
+  const { data: board } = useBoard(boardSlug ?? "");
+  const updateTask = useUpdateTask(boardSlug);
 
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -88,6 +94,8 @@ export function KanbanBoard() {
         filterAssignee={filterAssignee}
         onFilterChange={setFilterAssignee}
         assignees={assignees}
+        boardSlug={boardSlug}
+        board={board ?? null}
       />
 
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -104,7 +112,11 @@ export function KanbanBoard() {
         </div>
       </DragDropContext>
 
-      <TaskFormDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
+      <TaskFormDialog
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        boardSlug={boardSlug}
+      />
 
       {selectedTask && (
         <TaskDetailDialog
@@ -113,6 +125,7 @@ export function KanbanBoard() {
           onOpenChange={(open) => {
             if (!open) setSelectedTaskId(null);
           }}
+          boardSlug={boardSlug}
         />
       )}
     </>

@@ -29,9 +29,11 @@ export function TaskCard({ task, index, onClick }: TaskCardProps) {
           className="mb-2"
         >
           <div
-            className={`bg-card rounded-lg border border-border/50 border-l-4 ${borderColor} p-3 cursor-pointer
-              transition-all duration-150 hover:shadow-md hover:border-border
-              ${snapshot.isDragging ? "shadow-lg scale-[1.02] opacity-90" : "shadow-sm"}`}
+            className={`bg-card rounded-xl border border-border/50 border-l-4 ${borderColor} p-3 cursor-pointer
+              shadow-md dark:shadow-black/20
+              transition-all duration-150
+              hover:-translate-y-0.5 hover:shadow-lg hover:border-border
+              ${snapshot.isDragging ? "shadow-lg scale-[1.02] opacity-90" : ""}`}
           >
             <p className="text-sm font-medium leading-snug text-foreground mb-1.5 line-clamp-2">
               {task.title}
