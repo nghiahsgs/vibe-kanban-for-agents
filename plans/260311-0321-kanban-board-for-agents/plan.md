@@ -14,11 +14,11 @@ Kanban board web app where humans manage tasks via drag-and-drop UI, AI agents i
 
 | # | Phase | Status | File |
 |---|-------|--------|------|
-| 1 | Project Setup & Configuration | TODO | [phase-01-project-setup.md](./phase-01-project-setup.md) |
-| 2 | Database & API Layer | TODO | [phase-02-database-api.md](./phase-02-database-api.md) |
-| 3 | Kanban Board UI | TODO | [phase-03-kanban-board-ui.md](./phase-03-kanban-board-ui.md) |
-| 4 | Task Management UI | TODO | [phase-04-task-management-ui.md](./phase-04-task-management-ui.md) |
-| 5 | Polish & Documentation | TODO | [phase-05-polish-docs.md](./phase-05-polish-docs.md) |
+| 1 | Project Setup & Configuration | DONE | [phase-01-project-setup.md](./phase-01-project-setup.md) |
+| 2 | Database & API Layer | DONE | [phase-02-database-api.md](./phase-02-database-api.md) |
+| 3 | Kanban Board UI | DONE | [phase-03-kanban-board-ui.md](./phase-03-kanban-board-ui.md) |
+| 4 | Task Management UI | DONE | [phase-04-task-management-ui.md](./phase-04-task-management-ui.md) |
+| 5 | Polish & Documentation | DONE | [phase-05-polish-docs.md](./phase-05-polish-docs.md) |
 
 ## Key Decisions
 - Fractional indexing (float) for task position/ordering

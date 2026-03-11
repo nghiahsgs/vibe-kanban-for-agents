@@ -1,12 +1,15 @@
 {
-  "name": "vibe-kanban-temp",
+  "name": "vibe-kanban-for-agents",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "npx tsx src/db/seed.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
