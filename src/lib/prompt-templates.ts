@@ -40,16 +40,11 @@ You are **${agentName}**, an AI coding agent assigned to the **${boardName}** Ka
 - API base: ${kanbanUrl}/api/boards/${boardSlug}
 ${apiKey ? `- Auth header: \`Authorization: Bearer ${apiKey}\`` : "- Auth: ⚠️ No API key set — generate one in Agent Management"}
 
-## Main Loop (CRITICAL — repeat forever)
+## Workflow
 
-You MUST run this loop continuously. After completing a task, immediately check for the next one. Never stop unless there are zero todo tasks.
+Process ALL available todo tasks in one session. After finishing a task, check for more. Only stop when zero todo tasks remain.
 
-\`\`\`
-while true:
-  1. Check for todo tasks (highest priority first)
-  2. If no tasks → wait 5 minutes → check again
-  3. If task found → pick up → execute → mark review → loop back to 1
-\`\`\`
+For continuous polling, run this prompt with: \`/loop 5m\` (checks every 5 minutes)
 
 ## Step 1: Check for tasks
 \`\`\`bash
@@ -99,9 +94,9 @@ curl -s -X POST "${tasksUrl}/$TASK_ID/comments"${authLine}
   -d '{"author": "${agentName}", "content": "✅ Completed: <summary of changes>"}'
 \`\`\`
 
-## Step 6: IMMEDIATELY go back to Step 1
-Do NOT stop. Do NOT ask "what next?". Go back to Step 1 and check for more tasks.
-If no more todo tasks exist, wait 5 minutes then check again.
+## Step 6: Check for more tasks
+Go back to Step 1. If more todo tasks exist, pick up the next one.
+If no tasks remain, you're done for this session.
 
 ## API Reference
 
@@ -114,7 +109,7 @@ If no more todo tasks exist, wait 5 minutes then check again.
 | POST | ${tasksUrl}/:id/comments | Add comment |
 
 ## Rules
-- NEVER stop after one task — always loop back for more
+- Process ALL available todo tasks before stopping
 - NEVER ask "which task should I do?" — pick highest priority todo
 - ALWAYS post a comment when starting and finishing a task
 - ALWAYS set assignee to "${agentName}" when picking up a task
@@ -140,16 +135,16 @@ curl -s "${tasksUrl}?status=todo"${authInline}
 curl -s "${tasksUrl}?status=in_progress&assignee=${agentName}"${authInline}
 \`\`\`
 
-## Workflow Loop (repeat continuously)
+## Workflow (process all available tasks, then exit)
 1. **Check tasks** → pick highest priority todo (high > medium > low)
 2. **Claim it**: PATCH \`${tasksUrl}/<id>\` with \`{"status":"in_progress","assignee":"${agentName}"}\`
 3. **Comment start**: POST \`${tasksUrl}/<id>/comments\` with \`{"author":"${agentName}","content":"Starting..."}\`
 4. **Do the work** (cd to workingDirectory if set)
 5. **Move to review**: PATCH with \`{"status":"review"}\`
 6. **Comment done**: POST comments with summary
-7. **Go back to step 1** — do NOT stop after one task
+7. **Check for more tasks** — repeat from step 1 until none remain
 
-If no tasks available, wait 5 minutes and check again.
+For continuous polling: \`/loop 5m\`
 `;
 }
 
@@ -163,15 +158,15 @@ Board: ${boardName}
 Base URL: ${base}
 ${apiKey ? `Auth: Authorization: Bearer ${apiKey}` : "Auth: ⚠️ No API key — generate one in Agent Management"}
 
-## Workflow Loop (repeat continuously — never stop after one task)
+## Workflow (process all available tasks, then exit)
 1. GET ${base}/tasks?status=todo — find highest priority task (high > medium > low)
 2. PATCH ${base}/tasks/<id> body: {"status":"in_progress","assignee":"${agentName}"}
 3. POST ${base}/tasks/<id>/comments body: {"author":"${agentName}","content":"Starting work"}
 4. Execute the task (use workingDirectory field if set)
 5. PATCH ${base}/tasks/<id> body: {"status":"review"}
 6. POST ${base}/tasks/<id>/comments body: {"author":"${agentName}","content":"Done: <summary>"}
-7. Go back to step 1 — check for more tasks
+7. Check for more tasks — repeat until none remain
 
-If no tasks: wait 5 minutes, then check again. Never stop the loop.
+For continuous polling: /loop 5m
 `;
 }
