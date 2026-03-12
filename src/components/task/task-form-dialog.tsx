@@ -26,9 +26,10 @@ interface TaskFormDialogProps {
   onOpenChange: (open: boolean) => void;
   task?: Task | null; // If provided, edit mode
   boardSlug?: string;
+  assignees?: string[]; // Existing assignee names for suggestions
 }
 
-export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskFormDialogProps) {
+export function TaskFormDialog({ open, onOpenChange, task, boardSlug, assignees = [] }: TaskFormDialogProps) {
   const createTask = useCreateTask(boardSlug);
   const updateTask = useUpdateTask(boardSlug);
   const isEdit = !!task;
@@ -168,10 +169,21 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskForm
             <label htmlFor="task-assignee" className="text-sm font-medium">Assignee</label>
             <Input
               id="task-assignee"
-              placeholder="Assign to..."
+              placeholder="e.g. claude-agent"
               value={assignee}
               onChange={(e) => setAssignee(e.target.value)}
+              list="assignee-suggestions"
             />
+            {assignees.length > 0 && (
+              <datalist id="assignee-suggestions">
+                {assignees.map((a) => (
+                  <option key={a} value={a} />
+                ))}
+              </datalist>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Use the agent name from Agent Setup (e.g. &quot;claude-agent&quot;)
+            </p>
           </div>
 
           {/* Working Directory */}

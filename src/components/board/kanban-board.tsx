@@ -116,6 +116,7 @@ export function KanbanBoard({ boardSlug }: KanbanBoardProps) {
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
         boardSlug={boardSlug}
+        assignees={assignees}
       />
 
       {selectedTask && (

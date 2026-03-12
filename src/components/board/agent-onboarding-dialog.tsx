@@ -80,6 +80,9 @@ export function AgentOnboardingDialog({ board, open, onOpenChange }: AgentOnboar
                 onChange={(e) => setAgentName(e.target.value)}
                 placeholder="claude-agent"
               />
+              <p className="text-xs text-muted-foreground">
+                Assign tasks to <strong>&quot;{agentName || "claude-agent"}&quot;</strong> in the task form
+              </p>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Agent Type</label>
