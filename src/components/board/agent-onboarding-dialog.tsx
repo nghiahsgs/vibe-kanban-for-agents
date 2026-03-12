@@ -290,12 +290,17 @@ export function AgentOnboardingDialog({ board, open, onOpenChange, boardSlug }: 
                   size="sm"
                   className="h-7 gap-1.5 text-xs bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0"
                   onClick={handleCopyAndCreate}
-                  disabled={!agentName.trim() || createAgent.isPending}
+                  disabled={!agentName.trim() || !apiKey.trim() || createAgent.isPending}
                 >
                   <Copy className="h-3.5 w-3.5" />
                   {agents.some((a) => a.name === agentName.trim()) ? "Copy Prompt" : "Copy & Create Agent"}
                 </Button>
               </div>
+              {!apiKey.trim() && (
+                <p className="pl-6 text-[11px] text-amber-600 dark:text-amber-400">
+                  Generate an API key above before copying the prompt
+                </p>
+              )}
               <div className="pl-6">
                 <textarea
                   readOnly
