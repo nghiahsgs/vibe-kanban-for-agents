@@ -29,20 +29,18 @@ export function TaskCard({ task, index, onClick }: TaskCardProps) {
           className="mb-2"
         >
           <div
-            className={`bg-card rounded-xl border border-border/50 border-l-4 ${borderColor} p-3 cursor-pointer
-              shadow-md dark:shadow-black/20
-              transition-all duration-150
-              hover:-translate-y-0.5 hover:shadow-lg hover:border-border
-              ${snapshot.isDragging ? "shadow-lg scale-[1.02] opacity-90" : ""}`}
+            className={`bg-card rounded-xl border border-border/50 dark:border-white/[0.08] border-l-4 ${borderColor} p-3 cursor-pointer
+              shadow-sm dark:shadow-black/25
+              transition-all duration-200 ease-out
+              hover:-translate-y-0.5 hover:shadow-md hover:dark:shadow-black/40 hover:border-border hover:dark:border-white/15
+              ${snapshot.isDragging ? "shadow-xl dark:shadow-black/50 scale-[1.02] opacity-95 ring-1 ring-primary/20" : ""}`}
           >
             <p className="text-sm font-medium leading-snug text-foreground mb-1.5 line-clamp-2">
               {task.title}
             </p>
-            {task.assignee && (
-              <p className="text-xs text-muted-foreground truncate">
-                {task.assignee}
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground truncate">
+              {task.assignee || "Unassigned"}
+            </p>
           </div>
         </div>
       )}

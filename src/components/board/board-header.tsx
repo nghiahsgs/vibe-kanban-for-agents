@@ -45,8 +45,8 @@ export function BoardHeader({
       <BoardSwitcher currentBoardSlug={boardSlug} />
       <div className="flex items-center gap-2">
         <Select value={filterAssignee ?? "all"} onValueChange={onFilterChange}>
-          <SelectTrigger className="w-[160px] h-9 text-sm">
-            <SelectValue placeholder="Filter by assignee" />
+          <SelectTrigger className="w-[180px] h-9 text-sm">
+            <SelectValue placeholder="All assignees" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All assignees</SelectItem>
