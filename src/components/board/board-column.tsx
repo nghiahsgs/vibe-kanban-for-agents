@@ -34,12 +34,12 @@ export function BoardColumn({ status, label, tasks, onTaskClick }: BoardColumnPr
   const config = columnConfig[status] || columnConfig.todo;
 
   return (
-    <div className="flex flex-col min-w-[260px] flex-1 rounded-xl border border-white/10 bg-muted/50 dark:bg-white/[0.03] backdrop-blur-md shadow-sm dark:shadow-black/10">
+    <div className="flex flex-col min-w-[260px] flex-1 rounded-2xl border border-border/60 bg-muted/60 dark:bg-white/[0.04]">
       {/* Column header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
-        <span className={`w-2 h-2 rounded-full shrink-0 ${config.dot}`} />
-        <h2 className="font-bold text-sm text-foreground">{label}</h2>
-        <span className={`ml-auto text-xs font-semibold tabular-nums px-1.5 py-0.5 rounded-full ${config.count}`}>
+      <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-border/40">
+        <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${config.dot}`} />
+        <h2 className="font-semibold text-[13px] uppercase tracking-wider text-foreground/70">{label}</h2>
+        <span className={`ml-auto text-[11px] font-semibold tabular-nums px-2 py-0.5 rounded-full ${config.count}`}>
           {tasks.length}
         </span>
       </div>
@@ -50,17 +50,21 @@ export function BoardColumn({ status, label, tasks, onTaskClick }: BoardColumnPr
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex-1 min-h-[200px] p-3 transition-colors rounded-b-xl ${
+            className={`flex-1 min-h-[200px] p-3 space-y-0 transition-colors rounded-b-2xl ${
               snapshot.isDraggingOver
                 ? "border-2 border-dashed border-primary/30 bg-primary/5"
                 : ""
             }`}
           >
             {tasks.length === 0 && !snapshot.isDraggingOver && (
-              <div className="flex flex-col items-center justify-center h-full min-h-[160px] gap-2 opacity-40">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
-                <p className="text-xs font-medium text-muted-foreground">No tasks yet</p>
-                <p className="text-[11px] text-muted-foreground/60">Drag here or create new</p>
+              <div className="flex flex-col items-center justify-center h-full min-h-[160px] gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-muted/80 dark:bg-white/[0.06] flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/70"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs font-medium text-muted-foreground/80">No tasks yet</p>
+                  <p className="text-[11px] text-muted-foreground/50 mt-0.5">Drag here or create new</p>
+                </div>
               </div>
             )}
             {tasks.map((task, index) => (

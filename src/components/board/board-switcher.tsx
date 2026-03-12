@@ -32,11 +32,11 @@ export function BoardSwitcher({ currentBoardSlug }: BoardSwitcherProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger
-          className="flex items-center gap-1.5 h-9 px-3 rounded-md font-bold text-xl hover:bg-muted/60 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex items-center gap-2 h-10 px-3 rounded-lg font-bold text-2xl tracking-tight hover:bg-muted/60 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <Kanban className="h-5 w-5 text-primary shrink-0" />
-          <span className="max-w-[200px] truncate">{displayName}</span>
-          <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+          <Kanban className="h-6 w-6 text-primary shrink-0" />
+          <span className="max-w-[240px] truncate">{displayName}</span>
+          <ChevronDown className="h-4 w-4 text-muted-foreground/70 shrink-0" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56">
           {boards?.map((board) => (

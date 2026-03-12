@@ -41,9 +41,11 @@ export function BoardHeader({
   }
 
   return (
-    <div className="flex items-center justify-between mb-8">
+    <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
       <BoardSwitcher currentBoardSlug={boardSlug} />
-      <div className="flex items-center gap-2">
+
+      <div className="flex items-center gap-1.5">
+        {/* Filter group */}
         <Select value={filterAssignee ?? "all"} onValueChange={onFilterChange}>
           <SelectTrigger className="w-[180px] h-9 text-sm">
             <SelectValue placeholder="All assignees" />
@@ -57,6 +59,11 @@ export function BoardHeader({
             ))}
           </SelectContent>
         </Select>
+
+        {/* Divider */}
+        <div className="w-px h-6 bg-border/50 mx-1.5" />
+
+        {/* Agent & theme controls */}
         {board && (
           <Button
             variant="outline"
@@ -77,10 +84,15 @@ export function BoardHeader({
         >
           {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>
+
+        {/* Divider */}
+        <div className="w-px h-6 bg-border/50 mx-1.5" />
+
+        {/* Primary CTA + Account */}
         <Button
           onClick={onNewTask}
           size="sm"
-          className="h-9 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0"
+          className="h-9 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 shadow-md shadow-blue-500/20 font-semibold"
         >
           + New Task
         </Button>

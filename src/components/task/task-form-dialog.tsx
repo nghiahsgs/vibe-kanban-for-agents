@@ -103,7 +103,7 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug, assignees 
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit Task" : "New Task"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+        <form onSubmit={handleSubmit} className="space-y-5 mt-3">
           {/* Title */}
           <div className="space-y-1.5">
             <label htmlFor="task-title" className="text-sm font-medium">
@@ -200,11 +200,15 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug, assignees 
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-2 pt-1">
+          <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending || !title.trim()}>
+            <Button
+              type="submit"
+              disabled={isPending || !title.trim()}
+              className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 shadow-sm font-semibold"
+            >
               {isPending ? "Saving..." : isEdit ? "Save changes" : "Create task"}
             </Button>
           </div>

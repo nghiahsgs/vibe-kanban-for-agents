@@ -2,6 +2,7 @@
 
 import { useComments } from "@/hooks/use-comments";
 import { formatRelativeTime } from "@/lib/format-time";
+import { renderMarkdown } from "@/lib/simple-markdown";
 
 interface CommentListProps {
   taskId: string;
@@ -64,7 +65,7 @@ export function CommentList({ taskId }: CommentListProps) {
                 {formatRelativeTime(comment.createdAt)}
               </span>
             </div>
-            <p className="text-sm text-foreground/80 leading-relaxed">{comment.content}</p>
+            <div className="text-sm text-foreground/80 leading-relaxed">{renderMarkdown(comment.content)}</div>
           </div>
         </div>
       ))}
