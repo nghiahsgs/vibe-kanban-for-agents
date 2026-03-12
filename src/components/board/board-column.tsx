@@ -34,7 +34,7 @@ export function BoardColumn({ status, label, tasks, onTaskClick }: BoardColumnPr
   const config = columnConfig[status] || columnConfig.todo;
 
   return (
-    <div className="flex flex-col min-w-[280px] w-[300px] shrink-0 rounded-xl border border-white/10 bg-muted/50 dark:bg-white/[0.03] backdrop-blur-md shadow-sm dark:shadow-black/10">
+    <div className="flex flex-col min-w-[260px] flex-1 rounded-xl border border-white/10 bg-muted/50 dark:bg-white/[0.03] backdrop-blur-md shadow-sm dark:shadow-black/10">
       {/* Column header */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
         <span className={`w-2 h-2 rounded-full shrink-0 ${config.dot}`} />
