@@ -15,10 +15,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Check session cookie (better-auth uses __Secure- prefix on HTTPS)
+  const sessionCookie =
+    request.cookies.get("better-auth.session_token") ||
+    request.cookies.get("__Secure-better-auth.session_token");
+
   // API routes: check for session cookie OR Bearer token
   if (pathname.startsWith("/api/")) {
     const authHeader = request.headers.get("authorization");
-    const sessionCookie = request.cookies.get("better-auth.session_token");
 
     if (!authHeader && !sessionCookie) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -27,7 +31,6 @@ export function middleware(request: NextRequest) {
   }
 
   // Web routes: redirect to login if no session
-  const sessionCookie = request.cookies.get("better-auth.session_token");
   if (!sessionCookie) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

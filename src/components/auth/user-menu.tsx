@@ -5,6 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -41,14 +42,16 @@ export function UserMenu() {
         {initials}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel className="flex flex-col gap-0.5 px-2 py-1.5">
-          <span className="font-medium text-sm text-foreground">
-            {session.user.name}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            {session.user.email}
-          </span>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="flex flex-col gap-0.5 px-2 py-1.5">
+            <span className="font-medium text-sm text-foreground">
+              {session.user.name}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {session.user.email}
+            </span>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <Link href="/settings" className="w-full">
