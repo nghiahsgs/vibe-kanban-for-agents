@@ -214,7 +214,7 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskForm
             <Button
               type="submit"
               disabled={isPending || !title.trim()}
-              className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 shadow-sm font-semibold"
+              className="font-semibold"
             >
               {isPending ? "Saving..." : isEdit ? "Save changes" : "Create task"}
             </Button>

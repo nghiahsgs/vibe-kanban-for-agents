@@ -6,18 +6,18 @@ import type { Task } from "@/types";
 
 const priorityConfig: Record<string, { border: string; badge: string; label: string }> = {
   high: {
-    border: "border-l-red-500",
-    badge: "bg-red-500/15 text-red-400",
+    border: "border-l-red-400",
+    badge: "bg-red-500/10 text-red-400",
     label: "High",
   },
   medium: {
-    border: "border-l-amber-500",
-    badge: "bg-amber-500/15 text-amber-400",
+    border: "border-l-yellow-400",
+    badge: "bg-yellow-500/10 text-yellow-400",
     label: "Med",
   },
   low: {
-    border: "border-l-emerald-500",
-    badge: "bg-emerald-500/15 text-emerald-400",
+    border: "border-l-emerald-400",
+    badge: "bg-emerald-500/10 text-emerald-400",
     label: "Low",
   },
 };
@@ -39,18 +39,18 @@ export function TaskCard({ task, index, onClick }: TaskCardProps) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           onClick={() => onClick(task.id)}
-          className="mb-2.5 last:mb-0"
+          className="mb-2 last:mb-0"
         >
           <div
-            className={`bg-card rounded-xl border border-border/60 border-l-[3px] ${config.border} px-3.5 py-3 cursor-pointer
-              transition-all duration-200 ease-out
-              hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/10 hover:border-border
-              ${snapshot.isDragging ? "shadow-xl shadow-black/20 scale-[1.02] ring-1 ring-primary/25" : ""}`}
+            className={`bg-card rounded-lg border border-border border-l-[3px] ${config.border} px-3 py-2.5 cursor-pointer
+              transition-colors duration-150
+              hover:bg-accent
+              ${snapshot.isDragging ? "ring-1 ring-ring" : ""}`}
           >
-            <p className="text-[13px] font-medium leading-snug text-foreground line-clamp-2">
+            <p className="text-sm font-medium leading-snug text-foreground line-clamp-2">
               {task.title}
             </p>
-            <div className="flex items-center justify-between mt-2.5 gap-2">
+            <div className="flex items-center justify-between mt-2 gap-2">
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
                 <User className="h-3 w-3 shrink-0 opacity-50" />
                 <span className="truncate">{task.assignee || "Unassigned"}</span>

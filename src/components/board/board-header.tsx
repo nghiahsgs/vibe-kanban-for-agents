@@ -41,13 +41,13 @@ export function BoardHeader({
   }
 
   return (
-    <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
+    <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
       <BoardSwitcher currentBoardSlug={boardSlug} />
 
       <div className="flex items-center gap-1.5">
-        {/* Filter group */}
+        {/* Filter */}
         <Select value={filterAssignee ?? "all"} onValueChange={onFilterChange}>
-          <SelectTrigger className="w-[180px] h-9 text-sm">
+          <SelectTrigger className="w-[160px] h-8 text-xs">
             <SelectValue placeholder="All assignees" />
           </SelectTrigger>
           <SelectContent>
@@ -60,39 +60,37 @@ export function BoardHeader({
           </SelectContent>
         </Select>
 
-        {/* Divider */}
-        <div className="w-px h-6 bg-border/50 mx-1.5" />
+        <div className="w-px h-5 bg-border mx-1" />
 
-        {/* Agent & theme controls */}
+        {/* Agent & theme */}
         {board && (
           <Button
             variant="outline"
             size="sm"
-            className="h-9 gap-1.5"
+            className="h-8 gap-1.5 text-xs"
             onClick={() => setIsAgentOpen(true)}
           >
-            <Bot className="h-4 w-4" />
+            <Bot className="h-3.5 w-3.5" />
             Agents
           </Button>
         )}
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9"
+          className="h-8 w-8"
           onClick={toggleTheme}
           aria-label="Toggle dark mode"
         >
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
         </Button>
 
-        {/* Divider */}
-        <div className="w-px h-6 bg-border/50 mx-1.5" />
+        <div className="w-px h-5 bg-border mx-1" />
 
         {/* Primary CTA + Account */}
         <Button
           onClick={onNewTask}
           size="sm"
-          className="h-9 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 shadow-md shadow-blue-500/20 font-semibold"
+          className="h-8 px-3 text-xs font-semibold"
         >
           + New Task
         </Button>

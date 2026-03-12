@@ -2,23 +2,24 @@
 
 import { Droppable } from "@hello-pangea/dnd";
 import { TaskCard } from "./task-card";
+import { Plus } from "lucide-react";
 import type { Task } from "@/types";
 
 const columnConfig: Record<string, { dot: string; count: string }> = {
   todo: {
-    dot: "bg-slate-400",
-    count: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+    dot: "bg-zinc-400",
+    count: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
   },
   in_progress: {
-    dot: "bg-blue-500",
+    dot: "bg-blue-400",
     count: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400",
   },
   review: {
-    dot: "bg-amber-500",
-    count: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400",
+    dot: "bg-yellow-400",
+    count: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400",
   },
   done: {
-    dot: "bg-emerald-500",
+    dot: "bg-emerald-400",
     count: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400",
   },
 };
@@ -34,12 +35,12 @@ export function BoardColumn({ status, label, tasks, onTaskClick }: BoardColumnPr
   const config = columnConfig[status] || columnConfig.todo;
 
   return (
-    <div className="flex flex-col min-w-[260px] flex-1 rounded-2xl border border-border/60 bg-muted/60 dark:bg-white/[0.04]">
+    <div className="flex flex-col min-w-[280px] flex-1 rounded-xl border border-border bg-card/50">
       {/* Column header */}
-      <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-border/40">
-        <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${config.dot}`} />
-        <h2 className="font-semibold text-[13px] uppercase tracking-wider text-foreground/70">{label}</h2>
-        <span className={`ml-auto text-[11px] font-semibold tabular-nums px-2 py-0.5 rounded-full ${config.count}`}>
+      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-border">
+        <span className={`w-2 h-2 rounded-full shrink-0 ${config.dot}`} />
+        <h2 className="font-semibold text-xs uppercase tracking-wide text-muted-foreground">{label}</h2>
+        <span className={`ml-auto text-[11px] font-semibold tabular-nums px-1.5 py-0.5 rounded-md ${config.count}`}>
           {tasks.length}
         </span>
       </div>
@@ -50,21 +51,18 @@ export function BoardColumn({ status, label, tasks, onTaskClick }: BoardColumnPr
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex-1 min-h-[200px] p-3 space-y-0 transition-colors rounded-b-2xl ${
+            className={`flex-1 min-h-[200px] p-2.5 transition-colors rounded-b-xl ${
               snapshot.isDraggingOver
-                ? "border-2 border-dashed border-primary/30 bg-primary/5"
+                ? "bg-accent/50"
                 : ""
             }`}
           >
             {tasks.length === 0 && !snapshot.isDraggingOver && (
-              <div className="flex flex-col items-center justify-center h-full min-h-[160px] gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-muted/80 dark:bg-white/[0.06] flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/70"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+              <div className="flex flex-col items-center justify-center h-full min-h-[160px] gap-2">
+                <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+                  <Plus className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <div className="text-center">
-                  <p className="text-xs font-medium text-muted-foreground/80">No tasks yet</p>
-                  <p className="text-[11px] text-muted-foreground/50 mt-0.5">Drag here or create new</p>
-                </div>
+                <p className="text-xs text-muted-foreground">No tasks</p>
               </div>
             )}
             {tasks.map((task, index) => (

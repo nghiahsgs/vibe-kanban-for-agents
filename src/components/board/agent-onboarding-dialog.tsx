@@ -144,7 +144,7 @@ export function AgentOnboardingDialog({ board, open, onOpenChange, boardSlug }: 
                 </p>
                 <Button
                   size="sm"
-                  className="mt-4 h-8 gap-1.5 text-xs bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0"
+                  className="mt-4 h-8 gap-1.5 text-xs font-semibold"
                   onClick={() => setActiveTab("onboard")}
                 >
                   <Plug className="h-3.5 w-3.5" />
@@ -288,7 +288,7 @@ export function AgentOnboardingDialog({ board, open, onOpenChange, boardSlug }: 
                 <Button
                   type="button"
                   size="sm"
-                  className="h-7 gap-1.5 text-xs bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0"
+                  className="h-7 gap-1.5 text-xs font-semibold"
                   onClick={handleCopyAndCreate}
                   disabled={!agentName.trim() || !apiKey.trim() || createAgent.isPending}
                 >
