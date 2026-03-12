@@ -34,6 +34,16 @@ export interface Comment {
   createdAt: string;
 }
 
+export type AgentType = "claude-code" | "cursor" | "generic";
+
+export interface Agent {
+  id: string;
+  boardId: string;
+  name: string;
+  type: AgentType;
+  createdAt: string;
+}
+
 export interface ApiError {
   type: string;
   title: string;

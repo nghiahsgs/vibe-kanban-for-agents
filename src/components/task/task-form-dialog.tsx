@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCreateTask, useUpdateTask } from "@/hooks/use-tasks";
+import { useAgents } from "@/hooks/use-agents";
 import { toast } from "sonner";
 import type { Task } from "@/types";
 
@@ -26,12 +27,12 @@ interface TaskFormDialogProps {
   onOpenChange: (open: boolean) => void;
   task?: Task | null; // If provided, edit mode
   boardSlug?: string;
-  assignees?: string[]; // Existing assignee names for suggestions
 }
 
-export function TaskFormDialog({ open, onOpenChange, task, boardSlug, assignees = [] }: TaskFormDialogProps) {
+export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskFormDialogProps) {
   const createTask = useCreateTask(boardSlug);
   const updateTask = useUpdateTask(boardSlug);
+  const { data: agents = [] } = useAgents(boardSlug);
   const isEdit = !!task;
 
   const [title, setTitle] = useState("");
@@ -167,22 +168,28 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug, assignees 
           {/* Assignee */}
           <div className="space-y-1.5">
             <label htmlFor="task-assignee" className="text-sm font-medium">Assignee</label>
-            <Input
-              id="task-assignee"
-              placeholder="e.g. claude-agent"
-              value={assignee}
-              onChange={(e) => setAssignee(e.target.value)}
-              list="assignee-suggestions"
-            />
-            {assignees.length > 0 && (
-              <datalist id="assignee-suggestions">
-                {assignees.map((a) => (
-                  <option key={a} value={a} />
-                ))}
-              </datalist>
+            {agents.length > 0 ? (
+              <Select value={assignee || "unassigned"} onValueChange={(v) => setAssignee(v === "unassigned" ? "" : (v ?? ""))}>
+                <SelectTrigger id="task-assignee">
+                  <SelectValue placeholder="Select agent" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  {agents.map((a) => (
+                    <SelectItem key={a.id} value={a.name}>{a.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Input
+                id="task-assignee"
+                placeholder="e.g. claude-agent (create agents in Agent Management)"
+                value={assignee}
+                onChange={(e) => setAssignee(e.target.value)}
+              />
             )}
             <p className="text-xs text-muted-foreground">
-              Use the agent name from Agent Setup (e.g. &quot;claude-agent&quot;)
+              Create agents via Agents button in the header
             </p>
           </div>
 

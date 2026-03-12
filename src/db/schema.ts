@@ -39,6 +39,16 @@ export const tasks = pgTable("tasks", {
     .$defaultFn(() => new Date().toISOString()),
 });
 
+export const agents = pgTable("agents", {
+  id: text("id").primaryKey(),
+  boardId: text("board_id").notNull().references(() => boards.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  type: text("type", { enum: ["claude-code", "cursor", "generic"] }).notNull().default("claude-code"),
+  createdAt: text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
+}, (table) => [
+  unique("agents_board_name_unique").on(table.boardId, table.name),
+]);
+
 export const comments = pgTable("comments", {
   id: text("id").primaryKey(),
   taskId: text("task_id")

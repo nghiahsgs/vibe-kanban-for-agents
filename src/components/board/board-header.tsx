@@ -72,7 +72,7 @@ export function BoardHeader({
             onClick={() => setIsAgentOpen(true)}
           >
             <Bot className="h-4 w-4" />
-            Agent Setup
+            Agents
           </Button>
         )}
         <Button
@@ -104,6 +104,7 @@ export function BoardHeader({
           board={board}
           open={isAgentOpen}
           onOpenChange={setIsAgentOpen}
+          boardSlug={boardSlug}
         />
       )}
     </div>

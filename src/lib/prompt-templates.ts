@@ -19,10 +19,16 @@ export function generateAgentPrompt(type: AgentType, ctx: PromptContext): string
   }
 }
 
+/** Build the -H auth flag; returns empty string if no key (commands still work via session) */
+function authFlag(apiKey: string): string {
+  return apiKey ? `-H "Authorization: Bearer ${apiKey}"` : "";
+}
+
 function generateClaudeCodePrompt(ctx: PromptContext): string {
   const { boardName, boardSlug, kanbanUrl, agentName, apiKey } = ctx;
   const tasksUrl = `${kanbanUrl}/api/boards/${boardSlug}/tasks`;
-  const authHeader = apiKey ? `-H "Authorization: Bearer ${apiKey}"` : `# (no API key set — add one in board settings)`;
+  const auth = authFlag(apiKey);
+  const authLine = auth ? `\n${auth} \\` : "";
 
   return `# ${boardName} — Agent Instructions
 
@@ -32,111 +38,118 @@ You are **${agentName}**, an AI coding agent assigned to the **${boardName}** Ka
 ## Board Access
 - Board URL: ${kanbanUrl}/boards/${boardSlug}
 - API base: ${kanbanUrl}/api/boards/${boardSlug}
-- Auth header: \`Authorization: Bearer ${apiKey || "YOUR_API_KEY"}\`
+${apiKey ? `- Auth header: \`Authorization: Bearer ${apiKey}\`` : "- Auth: ⚠️ No API key set — generate one in Agent Management"}
 
-## On Session Start (ALWAYS do this first)
-\`\`\`bash
-# Check for tasks
-curl -s ${tasksUrl}?status=todo ${authHeader} | jq '.tasks | sort_by(.priority == "high") | reverse | .[0]'
-curl -s ${tasksUrl}?status=in_progress ${authHeader} | jq '.tasks'
+## Main Loop (CRITICAL — repeat forever)
+
+You MUST run this loop continuously. After completing a task, immediately check for the next one. Never stop unless there are zero todo tasks.
+
+\`\`\`
+while true:
+  1. Check for todo tasks (highest priority first)
+  2. If no tasks → wait 5 minutes → check again
+  3. If task found → pick up → execute → mark review → loop back to 1
 \`\`\`
 
-## Auto-Pilot Workflow (DO NOT ask permission — just execute)
-
-### Priority order: high > medium > low
-
-### 1. Pick up highest-priority todo task
+## Step 1: Check for tasks
 \`\`\`bash
-TASK_ID="<task-id>"
-curl -s -X PATCH "${tasksUrl}/$TASK_ID" ${authHeader} \\
+# Get highest priority todo task
+curl -s "${tasksUrl}?status=todo"${authLine}
+  -H "Content-Type: application/json" | jq '.tasks | sort_by(.priority == "high") | reverse | .[0]'
+
+# Also check if you have in-progress tasks to finish
+curl -s "${tasksUrl}?status=in_progress&assignee=${agentName}"${authLine}
+  -H "Content-Type: application/json" | jq '.tasks'
+\`\`\`
+
+## Step 2: Pick up the task
+\`\`\`bash
+TASK_ID="<task-id-from-step-1>"
+curl -s -X PATCH "${tasksUrl}/$TASK_ID"${authLine}
   -H "Content-Type: application/json" \\
-  -d '{"status": "in_progress"}'
+  -d '{"status": "in_progress", "assignee": "${agentName}"}'
 \`\`\`
 
-### 2. Comment that you're starting
+## Step 3: Comment that you're starting
 \`\`\`bash
-curl -s -X POST "${tasksUrl}/$TASK_ID/comments" ${authHeader} \\
+curl -s -X POST "${tasksUrl}/$TASK_ID/comments"${authLine}
   -H "Content-Type: application/json" \\
   -d '{"author": "${agentName}", "content": "Starting work on this task"}'
 \`\`\`
 
-### 3. Do the work
+## Step 4: Do the work
 - Read the task title and description carefully
 - If \`workingDirectory\` is set: \`cd <workingDirectory>\` before coding
 - Implement the changes, run tests, fix issues
-
-### 4. Post progress comments at milestones
+- Post progress comments at milestones:
 \`\`\`bash
-curl -s -X POST "${tasksUrl}/$TASK_ID/comments" ${authHeader} \\
+curl -s -X POST "${tasksUrl}/$TASK_ID/comments"${authLine}
   -H "Content-Type: application/json" \\
-  -d '{"author": "${agentName}", "content": "Progress update: <what you did>"}'
+  -d '{"author": "${agentName}", "content": "Progress: <what you did>"}'
 \`\`\`
 
-### 5. Move to review when complete
+## Step 5: Complete — move to review
 \`\`\`bash
-curl -s -X PATCH "${tasksUrl}/$TASK_ID" ${authHeader} \\
+curl -s -X PATCH "${tasksUrl}/$TASK_ID"${authLine}
   -H "Content-Type: application/json" \\
   -d '{"status": "review"}'
-\`\`\`
 
-### 6. Post completion summary
-\`\`\`bash
-curl -s -X POST "${tasksUrl}/$TASK_ID/comments" ${authHeader} \\
+curl -s -X POST "${tasksUrl}/$TASK_ID/comments"${authLine}
   -H "Content-Type: application/json" \\
-  -d '{"author": "${agentName}", "content": "Completed: <summary of changes>"}'
+  -d '{"author": "${agentName}", "content": "✅ Completed: <summary of changes>"}'
 \`\`\`
 
-### 7. Pick up next task — repeat from step 1
+## Step 6: IMMEDIATELY go back to Step 1
+Do NOT stop. Do NOT ask "what next?". Go back to Step 1 and check for more tasks.
+If no more todo tasks exist, wait 5 minutes then check again.
 
 ## API Reference
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | /api/boards/${boardSlug}/tasks | List tasks (filter: ?status=, ?assignee=, ?priority=) |
-| POST | /api/boards/${boardSlug}/tasks | Create task |
-| PATCH | /api/boards/${boardSlug}/tasks/:id | Update task |
-| GET | /api/boards/${boardSlug}/tasks/:id/comments | List comments |
-| POST | /api/boards/${boardSlug}/tasks/:id/comments | Add comment |
-
-## Polling
-Check for new tasks every 5 minutes when idle.
+| GET | ${tasksUrl} | List tasks (?status=, ?assignee=, ?priority=) |
+| POST | ${tasksUrl} | Create task |
+| PATCH | ${tasksUrl}/:id | Update task |
+| GET | ${tasksUrl}/:id/comments | List comments |
+| POST | ${tasksUrl}/:id/comments | Add comment |
 
 ## Rules
-- NEVER ask "which task should I do?" — just pick the highest priority todo
-- ALWAYS post a comment when starting and finishing
-- ALWAYS move in_progress tasks you find back to review if you finished them
+- NEVER stop after one task — always loop back for more
+- NEVER ask "which task should I do?" — pick highest priority todo
+- ALWAYS post a comment when starting and finishing a task
+- ALWAYS set assignee to "${agentName}" when picking up a task
 - If a task has a \`workingDirectory\`, always cd there before working
+- Priority order: high > medium > low
 `;
 }
 
 function generateCursorPrompt(ctx: PromptContext): string {
   const { boardName, boardSlug, kanbanUrl, agentName, apiKey } = ctx;
   const tasksUrl = `${kanbanUrl}/api/boards/${boardSlug}/tasks`;
-  const authFlag = apiKey ? `-H "Authorization: Bearer ${apiKey}"` : "";
+  const auth = authFlag(apiKey);
+  const authInline = auth ? ` ${auth}` : "";
 
   return `# Agent Instructions: ${boardName}
 
 You are **${agentName}** working on the **${boardName}** board at ${kanbanUrl}/boards/${boardSlug}.
+${apiKey ? `Auth: \`Authorization: Bearer ${apiKey}\`` : "Auth: ⚠️ No API key — generate one in Agent Management"}
 
 ## Getting Tasks
 \`\`\`bash
-# List todo tasks
-curl -s "${tasksUrl}?status=todo" ${authFlag}
-
-# List in-progress tasks
-curl -s "${tasksUrl}?status=in_progress" ${authFlag}
+curl -s "${tasksUrl}?status=todo"${authInline}
+curl -s "${tasksUrl}?status=in_progress&assignee=${agentName}"${authInline}
 \`\`\`
 
-## Workflow
-1. **Get tasks** → pick highest priority (high > medium > low)
-2. **Claim it**: PATCH \`${tasksUrl}/<id>\` with \`{"status":"in_progress"}\`
+## Workflow Loop (repeat continuously)
+1. **Check tasks** → pick highest priority todo (high > medium > low)
+2. **Claim it**: PATCH \`${tasksUrl}/<id>\` with \`{"status":"in_progress","assignee":"${agentName}"}\`
 3. **Comment start**: POST \`${tasksUrl}/<id>/comments\` with \`{"author":"${agentName}","content":"Starting..."}\`
 4. **Do the work** (cd to workingDirectory if set)
 5. **Move to review**: PATCH with \`{"status":"review"}\`
 6. **Comment done**: POST comments with summary
-7. **Repeat**
+7. **Go back to step 1** — do NOT stop after one task
 
-Auth: \`Authorization: Bearer ${apiKey || "YOUR_API_KEY"}\`
+If no tasks available, wait 5 minutes and check again.
 `;
 }
 
@@ -148,17 +161,17 @@ function generateGenericPrompt(ctx: PromptContext): string {
 
 Board: ${boardName}
 Base URL: ${base}
-Auth: Authorization: Bearer ${apiKey || "YOUR_API_KEY"}
+${apiKey ? `Auth: Authorization: Bearer ${apiKey}` : "Auth: ⚠️ No API key — generate one in Agent Management"}
 
-## Workflow
+## Workflow Loop (repeat continuously — never stop after one task)
 1. GET ${base}/tasks?status=todo — find highest priority task (high > medium > low)
-2. PATCH ${base}/tasks/<id> body: {"status":"in_progress"}
+2. PATCH ${base}/tasks/<id> body: {"status":"in_progress","assignee":"${agentName}"}
 3. POST ${base}/tasks/<id>/comments body: {"author":"${agentName}","content":"Starting work"}
 4. Execute the task (use workingDirectory field if set)
 5. PATCH ${base}/tasks/<id> body: {"status":"review"}
 6. POST ${base}/tasks/<id>/comments body: {"author":"${agentName}","content":"Done: <summary>"}
-7. Repeat for next task
+7. Go back to step 1 — check for more tasks
 
-Poll every 5 minutes when idle.
+If no tasks: wait 5 minutes, then check again. Never stop the loop.
 `;
 }
