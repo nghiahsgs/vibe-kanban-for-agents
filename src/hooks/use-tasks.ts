@@ -62,6 +62,8 @@ export function useCreateTask(boardSlug?: string) {
 
 export function useUpdateTask(boardSlug?: string) {
   const queryClient = useQueryClient();
+  const queryKey = boardSlug ? ["tasks", boardSlug] : ["tasks"];
+
   return useMutation({
     mutationFn: async ({
       id,
@@ -78,10 +80,22 @@ export function useUpdateTask(boardSlug?: string) {
       if (!res.ok) throw new Error("Failed to update task");
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: boardSlug ? ["tasks", boardSlug] : ["tasks"],
-      });
+    /* Optimistic update — move card instantly, rollback on error */
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<Task[]>(queryKey);
+      queryClient.setQueryData<Task[]>(queryKey, (old) =>
+        old?.map((t) =>
+          t.id === variables.id ? { ...t, ...variables, updatedAt: new Date().toISOString() } : t
+        )
+      );
+      return { previous };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previous) queryClient.setQueryData(queryKey, context.previous);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 }
