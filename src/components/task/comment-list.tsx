@@ -65,7 +65,7 @@ export function CommentList({ taskId }: CommentListProps) {
                 {formatRelativeTime(comment.createdAt)}
               </span>
             </div>
-            <div className="text-sm text-foreground/80 leading-relaxed">{renderMarkdown(comment.content)}</div>
+            <div className="text-sm text-foreground leading-relaxed">{renderMarkdown(comment.content)}</div>
           </div>
         </div>
       ))}

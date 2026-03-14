@@ -104,7 +104,7 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskForm
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit Task" : "New Task"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-5 mt-3">
+        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           {/* Title */}
           <div className="space-y-1.5">
             <label htmlFor="task-title" className="text-sm font-medium">
@@ -207,7 +207,7 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskForm
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>

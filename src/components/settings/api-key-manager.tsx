@@ -156,15 +156,15 @@ export function ApiKeyManager() {
 
       {/* Newly created key display */}
       {createdKey && (
-        <div className="rounded-lg border border-amber-500/50 bg-amber-50 dark:bg-amber-950/20 p-4 space-y-3">
+        <div className="rounded-lg border border-status-review/40 bg-status-review-bg p-4 space-y-3">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400 shrink-0" />
-            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+            <AlertTriangle className="size-4 text-status-review-text shrink-0" />
+            <p className="text-sm font-medium text-status-review-text">
               Save this key — it will only be shown once!
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <code className="flex-1 rounded border border-amber-300 dark:border-amber-700 bg-white dark:bg-black px-3 py-2 text-sm font-mono break-all">
+            <code className="flex-1 rounded border border-border bg-surface-sunken px-3 py-2 text-sm font-mono break-all">
               {createdKey.key}
             </code>
             <Button
@@ -180,7 +180,7 @@ export function ApiKeyManager() {
               )}
             </Button>
           </div>
-          <p className="text-xs text-amber-700 dark:text-amber-400">
+          <p className="text-xs text-status-review-text">
             Key <strong>{createdKey.name}</strong> created.
             {createdKey.expiresAt && ` Expires ${formatDate(createdKey.expiresAt)}.`}
           </p>

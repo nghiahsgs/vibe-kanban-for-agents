@@ -16,10 +16,17 @@ import { CommentList } from "./comment-list";
 import { CommentForm } from "./comment-form";
 import type { Task } from "@/types";
 
-const priorityColors: Record<string, string> = {
-  high: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-  medium: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-  low: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+const statusBadgeVariant: Record<string, "status_todo" | "status_in_progress" | "status_review" | "status_done"> = {
+  todo: "status_todo",
+  in_progress: "status_in_progress",
+  review: "status_review",
+  done: "status_done",
+};
+
+const priorityBadgeVariant: Record<string, "priority_high" | "priority_medium" | "priority_low"> = {
+  high: "priority_high",
+  medium: "priority_medium",
+  low: "priority_low",
 };
 
 const statusLabels: Record<string, string> = {
@@ -77,11 +84,11 @@ export function TaskDetailDialog({ task, open, onOpenChange, boardSlug }: TaskDe
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
               <div className="space-y-1">
                 <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">Status</p>
-                <Badge variant="secondary">{statusLabels[task.status]}</Badge>
+                <Badge variant={statusBadgeVariant[task.status] || "secondary"}>{statusLabels[task.status]}</Badge>
               </div>
               <div className="space-y-1">
                 <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">Priority</p>
-                <Badge variant="outline" className={priorityColors[task.priority]}>
+                <Badge variant={priorityBadgeVariant[task.priority] || "secondary"}>
                   {task.priority}
                 </Badge>
               </div>
@@ -108,7 +115,7 @@ export function TaskDetailDialog({ task, open, onOpenChange, boardSlug }: TaskDe
             {/* Description */}
             <div className="space-y-2">
               <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">Description</p>
-              <div className="rounded-md border bg-muted/30 px-4 py-3">
+              <div className="rounded-md border bg-surface-sunken px-4 py-3">
                 <p className="text-sm leading-relaxed">
                   {task.description || <span className="text-muted-foreground italic">No description provided.</span>}
                 </p>

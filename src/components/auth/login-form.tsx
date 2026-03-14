@@ -34,12 +34,12 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="border-0 shadow-lg">
+    <Card className="border border-border shadow-none">
       <CardContent className="pt-6">
         <h2 className="mb-6 text-center text-lg font-semibold">
           Sign in to your account
         </h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="email" className="text-sm font-medium">
               Email

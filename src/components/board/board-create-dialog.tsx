@@ -77,11 +77,11 @@ export function BoardCreateDialog({ open, onOpenChange }: BoardCreateDialogProps
             <DialogTitle>Board Created</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-2">
-            <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-4 space-y-2">
-              <p className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+            <div className="rounded-md border border-status-review/40 bg-status-review-bg p-4 space-y-2">
+              <p className="text-sm font-semibold text-status-review-text">
                 Save your API key now — it will not be shown again.
               </p>
-              <code className="block text-xs font-mono break-all bg-muted p-2 rounded select-all">
+              <code className="block text-xs font-mono break-all bg-surface-sunken p-2 rounded select-all">
                 {newApiKey}
               </code>
             </div>
@@ -110,7 +110,7 @@ export function BoardCreateDialog({ open, onOpenChange }: BoardCreateDialogProps
         <DialogHeader>
           <DialogTitle>Create New Board</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-1.5">
             <label htmlFor="board-name" className="text-sm font-medium">
               Name <span className="text-destructive">*</span>
@@ -137,7 +137,7 @@ export function BoardCreateDialog({ open, onOpenChange }: BoardCreateDialogProps
             />
           </div>
 
-          <label className="flex items-center gap-2.5 cursor-pointer">
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={generateKey}

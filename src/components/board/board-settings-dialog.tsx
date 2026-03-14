@@ -85,7 +85,7 @@ export function BoardSettingsDialog({ board, open, onOpenChange }: BoardSettings
         <DialogHeader>
           <DialogTitle>Board Settings</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSave} className="space-y-4 mt-2">
+        <form onSubmit={handleSave} className="space-y-4 pt-4">
           <div className="space-y-1.5">
             <label htmlFor="settings-name" className="text-sm font-medium">
               Name <span className="text-destructive">*</span>
@@ -121,8 +121,8 @@ export function BoardSettingsDialog({ board, open, onOpenChange }: BoardSettings
               <p className="text-xs text-muted-foreground">No API key set</p>
             )}
             {newApiKey && (
-              <div className="rounded border border-amber-500/40 bg-amber-500/10 p-2 space-y-1">
-                <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">
+              <div className="rounded border border-status-review/40 bg-status-review-bg p-2 space-y-1">
+                <p className="text-xs text-status-review-text font-semibold">
                   Save this key — it will not be shown again.
                 </p>
                 <code className="block text-xs font-mono break-all select-all">{newApiKey}</code>

@@ -105,7 +105,7 @@ export function AgentOnboardingDialog({ board, open, onOpenChange, boardSlug }: 
         </DialogHeader>
 
         {/* Tabs */}
-        <div className="flex gap-1 p-1 rounded-lg bg-muted/50 mt-2">
+        <div className="flex gap-1 p-1 rounded-lg bg-muted mt-2">
           <button
             onClick={() => setActiveTab("agents")}
             className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
@@ -135,7 +135,7 @@ export function AgentOnboardingDialog({ board, open, onOpenChange, boardSlug }: 
           <div className="space-y-3 mt-2">
             {agents.length === 0 ? (
               <div className="py-10 text-center">
-                <div className="mx-auto w-12 h-12 rounded-xl bg-muted/80 dark:bg-white/[0.06] flex items-center justify-center mb-3">
+                <div className="mx-auto w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-3">
                   <Bot className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <p className="text-sm font-medium text-muted-foreground">No agents yet</p>
@@ -152,17 +152,17 @@ export function AgentOnboardingDialog({ board, open, onOpenChange, boardSlug }: 
                 </Button>
               </div>
             ) : (
-              <div className="divide-y divide-border/40">
+              <div className="divide-y divide-border">
                 {agents.map((agent) => (
                   <div key={agent.id} className="flex items-center justify-between py-3 first:pt-0">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center">
                         <Bot className="h-4 w-4 text-primary" />
                       </div>
                       <div>
                         <p className="text-sm font-medium">{agent.name}</p>
                         <div className="flex items-center gap-1.5 mt-0.5">
-                          <Circle className="h-2 w-2 fill-emerald-500 text-emerald-500" />
+                          <Circle className="h-2 w-2 fill-status-done text-status-done" />
                           <span className="text-xs text-muted-foreground">{agent.type}</span>
                         </div>
                       </div>
@@ -268,7 +268,7 @@ export function AgentOnboardingDialog({ board, open, onOpenChange, boardSlug }: 
                     </Button>
                   </div>
                   {!apiKey && (
-                    <p className="text-[11px] text-amber-600 dark:text-amber-400">
+                    <p className="text-[11px] text-status-review-text">
                       {board.keyPrefix
                         ? "Click refresh to regenerate a new key (replaces old one)"
                         : "No API key set — click refresh to generate one"}
@@ -297,7 +297,7 @@ export function AgentOnboardingDialog({ board, open, onOpenChange, boardSlug }: 
                 </Button>
               </div>
               {!apiKey.trim() && (
-                <p className="pl-6 text-[11px] text-amber-600 dark:text-amber-400">
+                <p className="pl-6 text-[11px] text-status-review-text">
                   Generate an API key above before copying the prompt
                 </p>
               )}
@@ -305,7 +305,7 @@ export function AgentOnboardingDialog({ board, open, onOpenChange, boardSlug }: 
                 <textarea
                   readOnly
                   value={prompt}
-                  className="w-full min-h-[280px] rounded-lg border border-border/60 bg-muted/40 dark:bg-black/20 p-3 text-xs font-mono leading-relaxed resize-y focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="w-full min-h-[280px] rounded-lg border border-border bg-surface-sunken p-3 text-xs font-mono leading-relaxed resize-y focus:outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
             </div>

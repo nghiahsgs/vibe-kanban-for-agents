@@ -35,12 +35,12 @@ export function SignupForm() {
   }
 
   return (
-    <Card className="border-0 shadow-lg">
+    <Card className="border border-border shadow-none">
       <CardContent className="pt-6">
         <h2 className="mb-6 text-center text-lg font-semibold">
           Create your account
         </h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="name" className="text-sm font-medium">
               Name
