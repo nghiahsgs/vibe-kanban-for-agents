@@ -33,11 +33,12 @@ export function KanbanBoard({ boardSlug }: KanbanBoardProps) {
     return Array.from(set).sort();
   }, [tasks]);
 
-  // Filter tasks by assignee
+  // Filter tasks by assignee (show only top-level tasks)
   const filteredTasks = useMemo(() => {
     if (!tasks) return [];
-    if (filterAssignee === "all") return tasks;
-    return tasks.filter((t) => t.assignee === filterAssignee);
+    const topLevel = tasks.filter((t) => !t.parentId);
+    if (filterAssignee === "all") return topLevel;
+    return topLevel.filter((t) => t.assignee === filterAssignee);
   }, [tasks, filterAssignee]);
 
   // Group tasks by status, sorted by position

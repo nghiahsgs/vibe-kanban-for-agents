@@ -1,94 +1,87 @@
 import { db } from "@/db";
-import { tasks } from "@/db/schema";
+import { epics } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import {
-  jsonResponse,
-  errorResponse,
-  validateTaskFields,
-} from "@/lib/api-helpers";
+import { jsonResponse, errorResponse } from "@/lib/api-helpers";
 import { getAuthUser } from "@/lib/auth-helpers";
 import { resolveBoard } from "@/lib/board-helpers";
 
-type RouteParams = { params: Promise<{ slug: string; id: string }> };
+type RouteParams = { params: Promise<{ slug: string; epicId: string }> };
 
-/** GET /api/boards/:slug/tasks/:id — get single task (board-scoped) */
+/** GET /api/boards/:slug/epics/:epicId — get single epic */
 export async function GET(_request: Request, { params }: RouteParams) {
   try {
     const authUser = await getAuthUser();
     if (!authUser) return errorResponse(401, "Unauthorized", "Valid session or API key required");
 
-    const { slug, id } = await params;
+    const { slug, epicId } = await params;
     const board = await resolveBoard(authUser, slug);
     if (!board) return errorResponse(404, "Not Found", `Board '${slug}' not found`);
 
-    const [task] = await db
+    const [epic] = await db
       .select()
-      .from(tasks)
-      .where(and(eq(tasks.id, id), eq(tasks.boardId, board.id)))
+      .from(epics)
+      .where(and(eq(epics.id, epicId), eq(epics.boardId, board.id)))
       .limit(1);
 
-    if (!task) return errorResponse(404, "Not Found", `Task ${id} not found`, `/api/boards/${slug}/tasks/${id}`);
-    return jsonResponse(task);
+    if (!epic) return errorResponse(404, "Not Found", `Epic ${epicId} not found`);
+    return jsonResponse(epic);
   } catch (error) {
     return errorResponse(500, "Internal Error", String(error));
   }
 }
 
-/** PATCH /api/boards/:slug/tasks/:id — partial update (board-scoped) */
+/** PATCH /api/boards/:slug/epics/:epicId — update epic */
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const authUser = await getAuthUser();
     if (!authUser) return errorResponse(401, "Unauthorized", "Valid session or API key required");
 
-    const { slug, id } = await params;
+    const { slug, epicId } = await params;
     const board = await resolveBoard(authUser, slug);
     if (!board) return errorResponse(404, "Not Found", `Board '${slug}' not found`);
 
     const [existing] = await db
       .select()
-      .from(tasks)
-      .where(and(eq(tasks.id, id), eq(tasks.boardId, board.id)))
+      .from(epics)
+      .where(and(eq(epics.id, epicId), eq(epics.boardId, board.id)))
       .limit(1);
 
-    if (!existing) return errorResponse(404, "Not Found", `Task ${id} not found`, `/api/boards/${slug}/tasks/${id}`);
+    if (!existing) return errorResponse(404, "Not Found", `Epic ${epicId} not found`);
 
     const body = await request.json();
-    const fieldError = validateTaskFields(body);
-    if (fieldError) return errorResponse(400, "Validation Failed", fieldError);
-
     const updates: Record<string, unknown> = { updatedAt: new Date().toISOString() };
-    const allowedFields = ["title", "description", "status", "assignee", "priority", "position", "workingDirectory", "labels", "dueDate", "checklist", "parentId", "epicId"];
+    const allowedFields = ["name", "description", "color"];
     for (const field of allowedFields) {
       if (body[field] !== undefined) updates[field] = body[field];
     }
 
-    await db.update(tasks).set(updates).where(eq(tasks.id, id));
-    const [updated] = await db.select().from(tasks).where(eq(tasks.id, id)).limit(1);
+    await db.update(epics).set(updates).where(eq(epics.id, epicId));
+    const [updated] = await db.select().from(epics).where(eq(epics.id, epicId)).limit(1);
     return jsonResponse(updated);
   } catch (error) {
     return errorResponse(500, "Internal Error", String(error));
   }
 }
 
-/** DELETE /api/boards/:slug/tasks/:id — delete task (board-scoped) */
+/** DELETE /api/boards/:slug/epics/:epicId — delete epic */
 export async function DELETE(_request: Request, { params }: RouteParams) {
   try {
     const authUser = await getAuthUser();
     if (!authUser) return errorResponse(401, "Unauthorized", "Valid session or API key required");
 
-    const { slug, id } = await params;
+    const { slug, epicId } = await params;
     const board = await resolveBoard(authUser, slug);
     if (!board) return errorResponse(404, "Not Found", `Board '${slug}' not found`);
 
     const [existing] = await db
       .select()
-      .from(tasks)
-      .where(and(eq(tasks.id, id), eq(tasks.boardId, board.id)))
+      .from(epics)
+      .where(and(eq(epics.id, epicId), eq(epics.boardId, board.id)))
       .limit(1);
 
-    if (!existing) return errorResponse(404, "Not Found", `Task ${id} not found`, `/api/boards/${slug}/tasks/${id}`);
+    if (!existing) return errorResponse(404, "Not Found", `Epic ${epicId} not found`);
 
-    await db.delete(tasks).where(eq(tasks.id, id));
+    await db.delete(epics).where(eq(epics.id, epicId));
     return new Response(null, { status: 204 });
   } catch (error) {
     return errorResponse(500, "Internal Error", String(error));

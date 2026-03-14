@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { tasks } from "@/db/schema";
-import { eq, asc, and, type SQL } from "drizzle-orm";
+import { eq, asc, and, isNull, type SQL } from "drizzle-orm";
 import { getNextPosition } from "@/lib/position";
 import {
   jsonResponse,
@@ -28,11 +28,16 @@ export async function GET(request: Request, { params }: RouteParams) {
     const status = searchParams.get("status") as TaskStatus | null;
     const assignee = searchParams.get("assignee");
     const priority = searchParams.get("priority") as TaskPriority | null;
+    const parentIdParam = searchParams.get("parentId");
+    const epicId = searchParams.get("epicId");
 
     const conditions: SQL[] = [eq(tasks.boardId, board.id)];
     if (status) conditions.push(eq(tasks.status, status));
     if (assignee) conditions.push(eq(tasks.assignee, assignee));
     if (priority) conditions.push(eq(tasks.priority, priority));
+    if (parentIdParam === "null") conditions.push(isNull(tasks.parentId));
+    else if (parentIdParam) conditions.push(eq(tasks.parentId, parentIdParam));
+    if (epicId) conditions.push(eq(tasks.epicId, epicId));
 
     const result = await db
       .select()
@@ -75,6 +80,11 @@ export async function POST(request: Request, { params }: RouteParams) {
       priority: (body.priority as TaskPriority) || "medium",
       position: typeof body.position === "number" ? body.position : await getNextPosition(status, board.id),
       workingDirectory: (body.workingDirectory as string) || null,
+      labels: (body.labels as string) || null,
+      dueDate: (body.dueDate as string) || null,
+      checklist: (body.checklist as string) || null,
+      parentId: (body.parentId as string) || null,
+      epicId: (body.epicId as string) || null,
       createdAt: now,
       updatedAt: now,
     };

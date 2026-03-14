@@ -12,6 +12,34 @@ export interface Board {
   updatedAt: string;
 }
 
+export interface Label {
+  text: string;
+  color: string;
+}
+
+export interface ChecklistItem {
+  id: string;
+  title: string;
+  done: boolean;
+}
+
+export interface Epic {
+  id: string;
+  boardId: string;
+  name: string;
+  description: string | null;
+  color: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TaskDependency {
+  id: string;
+  taskId: string;
+  blockedByTaskId: string;
+  createdAt: string;
+}
+
 export interface Task {
   id: string;
   boardId: string;
@@ -22,6 +50,11 @@ export interface Task {
   priority: TaskPriority;
   position: number;
   workingDirectory: string | null;
+  labels: string | null;
+  dueDate: string | null;
+  checklist: string | null;
+  parentId: string | null;
+  epicId: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -35,6 +35,11 @@ export function useCreateTask(boardSlug?: string) {
       assignee?: string;
       priority?: string;
       workingDirectory?: string;
+      labels?: string;
+      dueDate?: string;
+      checklist?: string;
+      epicId?: string;
+      parentId?: string;
     }) => {
       const url = boardSlug
         ? `/api/boards/${boardSlug}/tasks`

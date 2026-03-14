@@ -1,4 +1,4 @@
-import { pgTable, text, real, unique } from "drizzle-orm/pg-core";
+import { pgTable, text, real, unique, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { users } from "./auth-schema";
 
 export const boards = pgTable("boards", {
@@ -14,6 +14,16 @@ export const boards = pgTable("boards", {
 }, (table) => [
   unique("boards_user_slug_unique").on(table.userId, table.slug),
 ]);
+
+export const epics = pgTable("epics", {
+  id: text("id").primaryKey(),
+  boardId: text("board_id").notNull().references(() => boards.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  color: text("color").notNull().default("#3b82f6"),
+  createdAt: text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
+  updatedAt: text("updated_at").notNull().$defaultFn(() => new Date().toISOString()),
+});
 
 export const tasks = pgTable("tasks", {
   id: text("id").primaryKey(),
@@ -31,6 +41,12 @@ export const tasks = pgTable("tasks", {
     .default("medium"),
   position: real("position").notNull(),
   workingDirectory: text("working_directory"),
+  labels: text("labels"),
+  dueDate: text("due_date"),
+  checklist: text("checklist"),
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  parentId: text("parent_id").references((): AnyPgColumn => tasks.id, { onDelete: "set null" }),
+  epicId: text("epic_id").references(() => epics.id, { onDelete: "set null" }),
   createdAt: text("created_at")
     .notNull()
     .$defaultFn(() => new Date().toISOString()),
@@ -60,5 +76,14 @@ export const comments = pgTable("comments", {
     .notNull()
     .$defaultFn(() => new Date().toISOString()),
 });
+
+export const taskDependencies = pgTable("task_dependencies", {
+  id: text("id").primaryKey(),
+  taskId: text("task_id").notNull().references(() => tasks.id, { onDelete: "cascade" }),
+  blockedByTaskId: text("blocked_by_task_id").notNull().references(() => tasks.id, { onDelete: "cascade" }),
+  createdAt: text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
+}, (table) => [
+  unique("task_dep_unique").on(table.taskId, table.blockedByTaskId),
+]);
 
 export * from "./auth-schema";
