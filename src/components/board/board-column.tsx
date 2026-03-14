@@ -26,7 +26,7 @@ export function BoardColumn({ status, label, tasks, onTaskClick, totalTasks = 0 
   const progress = totalTasks > 0 ? Math.round((tasks.length / totalTasks) * 100) : 0;
 
   return (
-    <div className="flex flex-col w-[300px] min-w-[300px] flex-shrink-0 snap-start">
+    <div className="flex flex-col min-w-[280px] flex-1 snap-start">
       <div className="flex flex-col rounded-2xl h-full bg-[#161d2e] border border-[#1e2a3d] transition-all duration-200">
         {/* Header */}
         <div className="px-4 pt-4 pb-3">

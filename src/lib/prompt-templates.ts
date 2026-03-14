@@ -72,10 +72,25 @@ curl -s -X POST "${tasksUrl}/$TASK_ID/comments"${authLine}
   -d '{"author": "${agentName}", "content": "Starting work on this task"}'
 \`\`\`
 
+## Step 3.5: Break down the task (create checklist)
+\`\`\`bash
+# Analyze the task, then create a step-by-step checklist
+curl -s -X PATCH "${tasksUrl}/$TASK_ID"${authLine}
+  -H "Content-Type: application/json" \\
+  -d '{"checklist": "[{\\"id\\":\\"1\\",\\"title\\":\\"Step 1: Analyze requirements\\",\\"done\\":false},{\\"id\\":\\"2\\",\\"title\\":\\"Step 2: Implement changes\\",\\"done\\":false},{\\"id\\":\\"3\\",\\"title\\":\\"Step 3: Test\\",\\"done\\":false}]"}'
+\`\`\`
+
 ## Step 4: Do the work
 - Read the task title and description carefully
 - If \`workingDirectory\` is set: \`cd <workingDirectory>\` before coding
 - Implement the changes, run tests, fix issues
+- Check off checklist items as you go:
+\`\`\`bash
+# Update checklist (mark items done)
+curl -s -X PATCH "${tasksUrl}/$TASK_ID"${authLine}
+  -H "Content-Type: application/json" \\
+  -d '{"checklist": "[{\\"id\\":\\"1\\",\\"title\\":\\"Step 1: Analyze requirements\\",\\"done\\":true},...]"}'
+\`\`\`
 - Post progress comments at milestones:
 \`\`\`bash
 curl -s -X POST "${tasksUrl}/$TASK_ID/comments"${authLine}
@@ -102,18 +117,31 @@ If no tasks remain, you're done for this session.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | ${tasksUrl} | List tasks (?status=, ?assignee=, ?priority=) |
+| GET | ${tasksUrl} | List tasks (?status=, ?assignee=, ?priority=, ?parentId=null) |
 | POST | ${tasksUrl} | Create task |
-| PATCH | ${tasksUrl}/:id | Update task |
+| PATCH | ${tasksUrl}/:id | Update task (incl. labels, checklist, dueDate, epicId) |
 | GET | ${tasksUrl}/:id/comments | List comments |
 | POST | ${tasksUrl}/:id/comments | Add comment |
+| GET | ${tasksUrl}/:id/dependencies | List task dependencies |
+| POST | ${tasksUrl}/:id/dependencies | Add dependency {"blockedByTaskId":"..."} |
+| GET | ${kanbanUrl}/api/boards/${boardSlug}/epics | List epics |
+
+### Task fields (PATCH body)
+- **checklist**: JSON string \`[{"id":"1","title":"step","done":false}]\` — create/update progress steps
+- **labels**: JSON string \`[{"text":"BACKEND","color":"#3b82f6"}]\` — add colored labels
+- **dueDate**: ISO date string e.g. \`"2026-03-20"\`
+- **parentId**: task ID to make this a subtask
+- **epicId**: epic ID to group under an epic
 
 ## Rules
 - Process ALL available todo tasks before stopping
 - NEVER ask "which task should I do?" — pick highest priority todo
+- ALWAYS create a checklist breakdown before starting work (Step 3.5)
+- ALWAYS check off checklist items as you complete them
 - ALWAYS post a comment when starting and finishing a task
 - ALWAYS set assignee to "${agentName}" when picking up a task
 - If a task has a \`workingDirectory\`, always cd there before working
+- If a task has dependencies, check them first — skip if blocked
 - Priority order: high > medium > low
 `;
 }
