@@ -8,16 +8,19 @@ export function BoardSkeleton() {
       {Array.from({ length: 4 }).map((_, colIdx) => (
         <div
           key={colIdx}
-          className="min-w-[280px] flex-1 rounded-xl border border-border bg-surface-sunken"
+          className="w-[300px] min-w-[300px] flex-shrink-0 rounded-2xl bg-muted border border-border"
         >
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
-            <Skeleton className="h-2 w-2 rounded-full" />
-            <Skeleton className="h-3 w-16" />
-            <Skeleton className="ml-auto h-4 w-5 rounded" />
+          <div className="px-4 pt-4 pb-3">
+            <div className="flex items-center gap-2.5 mb-3">
+              <Skeleton className="h-2.5 w-2.5 rounded-full" />
+              <Skeleton className="h-3.5 w-20" />
+              <Skeleton className="ml-auto h-4 w-6 rounded-full" />
+            </div>
+            <Skeleton className="h-1 w-full rounded-full" />
           </div>
-          <div className="p-2 min-h-[200px]">
+          <div className="px-3 pb-3 space-y-2.5 min-h-[200px]">
             {Array.from({ length: 2 + (colIdx % 2) }).map((_, cardIdx) => (
-              <Skeleton key={cardIdx} className="h-[60px] w-full mb-2 rounded-xl" />
+              <Skeleton key={cardIdx} className="h-[100px] w-full rounded-xl" />
             ))}
           </div>
         </div>

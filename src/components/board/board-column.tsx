@@ -5,24 +5,12 @@ import { TaskCard } from "./task-card";
 import { Plus } from "lucide-react";
 import type { Task } from "@/types";
 
-/* Status colors — semantic tokens from globals.css */
-const statusColors: Record<string, { dot: string; count: string }> = {
-  todo: {
-    dot: "bg-status-todo",
-    count: "bg-status-todo-bg text-status-todo-text",
-  },
-  in_progress: {
-    dot: "bg-status-in-progress",
-    count: "bg-status-in-progress-bg text-status-in-progress-text",
-  },
-  review: {
-    dot: "bg-status-review",
-    count: "bg-status-review-bg text-status-review-text",
-  },
-  done: {
-    dot: "bg-status-done",
-    count: "bg-status-done-bg text-status-done-text",
-  },
+/* Status column colors — dot color for each status */
+const statusColors: Record<string, string> = {
+  todo: "#64748b",
+  in_progress: "#3b82f6",
+  review: "#f59e0b",
+  done: "#10b981",
 };
 
 interface BoardColumnProps {
@@ -33,44 +21,71 @@ interface BoardColumnProps {
 }
 
 export function BoardColumn({ status, label, tasks, onTaskClick }: BoardColumnProps) {
-  const config = statusColors[status] || statusColors.todo;
+  const dotColor = statusColors[status] || "#64748b";
 
   return (
-    <div className="flex flex-col min-w-[280px] flex-1 rounded-xl border border-border bg-surface-sunken snap-start">
-      {/* Column header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
-        <span className={`w-2 h-2 rounded-full shrink-0 ${config.dot}`} />
-        <h2 className="font-semibold text-xs uppercase tracking-widest text-muted-foreground">{label}</h2>
-        <span className={`ml-auto text-[10px] font-semibold tabular-nums px-1.5 py-0.5 rounded ${config.count}`}>
-          {tasks.length}
-        </span>
-      </div>
-
-      {/* Droppable area */}
-      <Droppable droppableId={status}>
-        {(provided, snapshot) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            className={`flex-1 min-h-[200px] p-2 transition-colors rounded-b-xl ${
-              snapshot.isDraggingOver ? "bg-primary/5" : ""
-            }`}
-          >
-            {tasks.length === 0 && !snapshot.isDraggingOver && (
-              <div className="flex flex-col items-center justify-center h-full min-h-[160px] gap-2">
-                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-                  <Plus className="size-3.5 text-muted-foreground" />
-                </div>
-                <p className="text-xs text-muted-foreground">No tasks</p>
-              </div>
-            )}
-            {tasks.map((task, index) => (
-              <TaskCard key={task.id} task={task} index={index} onClick={onTaskClick} />
-            ))}
-            {provided.placeholder}
+    <div className="flex flex-col w-[300px] min-w-[300px] flex-shrink-0 snap-start">
+      <div className="flex flex-col rounded-2xl h-full bg-muted border border-border transition-all">
+        {/* Column header */}
+        <div className="px-4 pt-4 pb-3">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2.5 flex-1 min-w-0">
+              <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: dotColor }} />
+              <h2 className="text-sm font-semibold text-slate-200 truncate">{label}</h2>
+            </div>
+            <span className="text-xs font-semibold text-slate-500 bg-white/5 px-2 py-0.5 rounded-full ml-2">
+              {tasks.length}
+            </span>
           </div>
-        )}
-      </Droppable>
+
+          {/* Progress bar */}
+          <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: tasks.length > 0 ? "100%" : "0%",
+                backgroundColor: dotColor,
+                opacity: 0.6,
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Droppable card area */}
+        <Droppable droppableId={status}>
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className={`flex-1 px-3 pb-3 min-h-[80px] overflow-y-auto transition-all duration-150 ${
+                snapshot.isDraggingOver ? "bg-blue-500/5 rounded-b-2xl" : ""
+              }`}
+            >
+              {tasks.length === 0 && !snapshot.isDraggingOver && (
+                <div className="h-24 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-xl gap-1.5">
+                  <p className="text-xs text-slate-600">No tasks yet</p>
+                  <p className="text-[10px] text-slate-700">Drop here or add one</p>
+                </div>
+              )}
+              {tasks.map((task, index) => (
+                <TaskCard key={task.id} task={task} index={index} onClick={onTaskClick} />
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+
+        {/* Add task button at bottom */}
+        <div className="px-3 pb-3">
+          <button
+            className="flex items-center gap-2 w-full px-3 py-2 text-xs text-slate-600 hover:text-slate-300 hover:bg-white/5 rounded-xl transition-all group"
+            onClick={() => {/* will be connected via parent */}}
+          >
+            <Plus className="size-3.5 group-hover:scale-110 transition-transform" />
+            Add task
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

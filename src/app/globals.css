@@ -152,69 +152,69 @@
   --duration-slow: 250ms;
 }
 
-/* Dark mode — Linear-inspired: monochrome neutrals + indigo accent */
+/* Dark mode — deep navy/slate palette inspired by TaskFlow */
 .dark {
-  --background: #0f0f0f;
-  --foreground: #e4e4e7;
-  --card: #171717;
-  --card-foreground: #e4e4e7;
-  --popover: #171717;
-  --popover-foreground: #e4e4e7;
-  --primary: #e4e4e7;
-  --primary-foreground: #0f0f0f;
-  --secondary: #1f1f1f;
-  --secondary-foreground: #a1a1aa;
-  --muted: #1f1f1f;
-  --muted-foreground: #71717a;
-  --accent: #1f1f1f;
-  --accent-foreground: #e4e4e7;
+  --background: #0d1117;
+  --foreground: #e2e8f0;
+  --card: #1e2535;
+  --card-foreground: #e2e8f0;
+  --popover: #1a2236;
+  --popover-foreground: #e2e8f0;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #1e2535;
+  --secondary-foreground: #94a3b8;
+  --muted: #161d2e;
+  --muted-foreground: #64748b;
+  --accent: #232d40;
+  --accent-foreground: #e2e8f0;
   --destructive: #ef4444;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.06);
-  --ring: #6366f1;
-  --chart-1: #6366f1;
+  --border: #1e2a3d;
+  --input: #2d3748;
+  --ring: #3b82f6;
+  --chart-1: #3b82f6;
   --chart-2: #8b5cf6;
-  --chart-3: #a78bfa;
-  --chart-4: #c084fc;
-  --chart-5: #e879f9;
-  --sidebar: #0f0f0f;
-  --sidebar-foreground: #e4e4e7;
-  --sidebar-primary: #e4e4e7;
-  --sidebar-primary-foreground: #0f0f0f;
-  --sidebar-accent: #1f1f1f;
-  --sidebar-accent-foreground: #a1a1aa;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #6366f1;
+  --chart-3: #06b6d4;
+  --chart-4: #10b981;
+  --chart-5: #f59e0b;
+  --sidebar: #0d1117;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e2535;
+  --sidebar-accent-foreground: #94a3b8;
+  --sidebar-border: #1e2a3d;
+  --sidebar-ring: #3b82f6;
 
   /* Surface layers */
-  --surface: #0f0f0f;
-  --surface-elevated: #171717;
-  --surface-sunken: #0a0a0a;
+  --surface: #0d1117;
+  --surface-elevated: #1e2535;
+  --surface-sunken: #161d2e;
 
-  /* Status colors (brighter for dark bg contrast) */
-  --status-todo: #a1a1aa;
-  --status-todo-bg: rgba(161, 161, 170, 0.1);
-  --status-todo-text: #a1a1aa;
-  --status-in-progress: #818cf8;
-  --status-in-progress-bg: rgba(129, 140, 248, 0.1);
-  --status-in-progress-text: #818cf8;
-  --status-review: #fbbf24;
-  --status-review-bg: rgba(251, 191, 36, 0.1);
+  /* Status colors (vibrant on dark navy bg) */
+  --status-todo: #64748b;
+  --status-todo-bg: rgba(100, 116, 139, 0.1);
+  --status-todo-text: #94a3b8;
+  --status-in-progress: #3b82f6;
+  --status-in-progress-bg: rgba(59, 130, 246, 0.1);
+  --status-in-progress-text: #60a5fa;
+  --status-review: #f59e0b;
+  --status-review-bg: rgba(245, 158, 11, 0.1);
   --status-review-text: #fbbf24;
-  --status-done: #34d399;
-  --status-done-bg: rgba(52, 211, 153, 0.1);
+  --status-done: #10b981;
+  --status-done-bg: rgba(16, 185, 129, 0.1);
   --status-done-text: #34d399;
 
   /* Priority colors */
-  --priority-high: #f87171;
-  --priority-high-bg: rgba(248, 113, 113, 0.1);
-  --priority-high-text: #f87171;
-  --priority-medium: #fbbf24;
-  --priority-medium-bg: rgba(251, 191, 36, 0.1);
+  --priority-high: #f97316;
+  --priority-high-bg: rgba(249, 115, 22, 0.1);
+  --priority-high-text: #fb923c;
+  --priority-medium: #f59e0b;
+  --priority-medium-bg: rgba(245, 158, 11, 0.1);
   --priority-medium-text: #fbbf24;
-  --priority-low: #34d399;
-  --priority-low-bg: rgba(52, 211, 153, 0.1);
-  --priority-low-text: #34d399;
+  --priority-low: #22c55e;
+  --priority-low-bg: rgba(34, 197, 94, 0.1);
+  --priority-low-text: #4ade80;
 }
 
 @layer base {
@@ -262,11 +262,11 @@
 
 .overflow-x-auto::-webkit-scrollbar-thumb,
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: var(--border);
+  background-color: #334155;
   border-radius: 9999px;
 }
 
 .overflow-x-auto::-webkit-scrollbar-thumb:hover,
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background-color: var(--muted-foreground);
+  background-color: #475569;
 }

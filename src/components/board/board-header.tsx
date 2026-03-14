@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Bot } from "lucide-react";
+import { Sun, Moon, Bot, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -41,13 +41,14 @@ export function BoardHeader({
   }
 
   return (
-    <div className="flex items-center justify-between flex-wrap gap-y-3 mb-6 pb-4 border-b border-border">
+    <div className="flex items-center justify-between flex-wrap gap-y-3 mb-5 pb-3 border-b border-border">
       <BoardSwitcher currentBoardSlug={boardSlug} />
 
       <div className="flex items-center gap-2">
         {/* Filter */}
         <Select value={filterAssignee ?? "all"} onValueChange={onFilterChange}>
-          <SelectTrigger size="sm" className="w-[160px] text-xs">
+          <SelectTrigger size="sm" className="w-[160px] text-xs border-white/10">
+            <Filter className="size-3 mr-1 text-muted-foreground" />
             <SelectValue placeholder="All assignees" />
           </SelectTrigger>
           <SelectContent>
@@ -67,6 +68,7 @@ export function BoardHeader({
           <Button
             variant="outline"
             size="sm"
+            className="border-white/10 hover:border-white/20 hover:bg-white/5"
             onClick={() => setIsAgentOpen(true)}
           >
             <Bot className="size-3.5" />
@@ -76,6 +78,7 @@ export function BoardHeader({
         <Button
           variant="ghost"
           size="icon-sm"
+          className="text-slate-500 hover:text-slate-300 hover:bg-white/10"
           onClick={toggleTheme}
           aria-label="Toggle dark mode"
         >
@@ -85,7 +88,11 @@ export function BoardHeader({
         <div className="w-px h-5 bg-border mx-1" />
 
         {/* Primary CTA + Account */}
-        <Button onClick={onNewTask} size="sm">
+        <Button
+          onClick={onNewTask}
+          size="sm"
+          className="bg-blue-600 text-white hover:bg-blue-500 border-transparent"
+        >
           + New Task
         </Button>
         <UserMenu />

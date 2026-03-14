@@ -8,7 +8,7 @@ export default async function BoardPage({
 }) {
   const { slug } = await params;
   return (
-    <main className="min-h-screen bg-background px-6 py-5 md:px-10 md:py-6">
+    <main className="min-h-screen bg-background flex flex-col px-6 py-5 overflow-hidden">
       <BoardProvider>
         <KanbanBoard boardSlug={slug} />
       </BoardProvider>
