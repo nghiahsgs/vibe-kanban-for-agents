@@ -45,6 +45,36 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Surface layers — semantic elevation tokens */
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-sunken: var(--surface-sunken);
+
+  /* Status color tokens — for kanban column indicators */
+  --color-status-todo: var(--status-todo);
+  --color-status-todo-bg: var(--status-todo-bg);
+  --color-status-todo-text: var(--status-todo-text);
+  --color-status-in-progress: var(--status-in-progress);
+  --color-status-in-progress-bg: var(--status-in-progress-bg);
+  --color-status-in-progress-text: var(--status-in-progress-text);
+  --color-status-review: var(--status-review);
+  --color-status-review-bg: var(--status-review-bg);
+  --color-status-review-text: var(--status-review-text);
+  --color-status-done: var(--status-done);
+  --color-status-done-bg: var(--status-done-bg);
+  --color-status-done-text: var(--status-done-text);
+
+  /* Priority color tokens — for task card indicators */
+  --color-priority-high: var(--priority-high);
+  --color-priority-high-bg: var(--priority-high-bg);
+  --color-priority-high-text: var(--priority-high-text);
+  --color-priority-medium: var(--priority-medium);
+  --color-priority-medium-bg: var(--priority-medium-bg);
+  --color-priority-medium-text: var(--priority-medium-text);
+  --color-priority-low: var(--priority-low);
+  --color-priority-low-bg: var(--priority-low-bg);
+  --color-priority-low-text: var(--priority-low-text);
 }
 
 /* Light mode */
@@ -81,9 +111,44 @@
   --sidebar-accent-foreground: #3f3f46;
   --sidebar-border: #e4e4e7;
   --sidebar-ring: #6366f1;
+
+  /* Surface layers */
+  --surface: #fafafa;
+  --surface-elevated: #ffffff;
+  --surface-sunken: #f4f4f5;
+
+  /* Status colors (dot / badge-bg / badge-text) */
+  --status-todo: #71717a;
+  --status-todo-bg: rgba(113, 113, 122, 0.1);
+  --status-todo-text: #71717a;
+  --status-in-progress: #6366f1;
+  --status-in-progress-bg: rgba(99, 102, 241, 0.1);
+  --status-in-progress-text: #4f46e5;
+  --status-review: #f59e0b;
+  --status-review-bg: rgba(245, 158, 11, 0.1);
+  --status-review-text: #b45309;
+  --status-done: #10b981;
+  --status-done-bg: rgba(16, 185, 129, 0.1);
+  --status-done-text: #047857;
+
+  /* Priority colors (border / badge-bg / badge-text) */
+  --priority-high: #ef4444;
+  --priority-high-bg: rgba(239, 68, 68, 0.1);
+  --priority-high-text: #dc2626;
+  --priority-medium: #f59e0b;
+  --priority-medium-bg: rgba(245, 158, 11, 0.1);
+  --priority-medium-text: #b45309;
+  --priority-low: #10b981;
+  --priority-low-bg: rgba(16, 185, 129, 0.1);
+  --priority-low-text: #047857;
+
+  /* Transition durations */
+  --duration-fast: 100ms;
+  --duration-normal: 150ms;
+  --duration-slow: 250ms;
 }
 
-/* Dark mode — inspired by vibe-mind-map / Cursor aesthetic */
+/* Dark mode — Linear-inspired: monochrome neutrals + indigo accent */
 .dark {
   --background: #0f0f0f;
   --foreground: #e4e4e7;
@@ -116,6 +181,36 @@
   --sidebar-accent-foreground: #a1a1aa;
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-ring: #6366f1;
+
+  /* Surface layers */
+  --surface: #0f0f0f;
+  --surface-elevated: #171717;
+  --surface-sunken: #0a0a0a;
+
+  /* Status colors (brighter for dark bg contrast) */
+  --status-todo: #a1a1aa;
+  --status-todo-bg: rgba(161, 161, 170, 0.1);
+  --status-todo-text: #a1a1aa;
+  --status-in-progress: #818cf8;
+  --status-in-progress-bg: rgba(129, 140, 248, 0.1);
+  --status-in-progress-text: #818cf8;
+  --status-review: #fbbf24;
+  --status-review-bg: rgba(251, 191, 36, 0.1);
+  --status-review-text: #fbbf24;
+  --status-done: #34d399;
+  --status-done-bg: rgba(52, 211, 153, 0.1);
+  --status-done-text: #34d399;
+
+  /* Priority colors */
+  --priority-high: #f87171;
+  --priority-high-bg: rgba(248, 113, 113, 0.1);
+  --priority-high-text: #f87171;
+  --priority-medium: #fbbf24;
+  --priority-medium-bg: rgba(251, 191, 36, 0.1);
+  --priority-medium-text: #fbbf24;
+  --priority-low: #34d399;
+  --priority-low-bg: rgba(52, 211, 153, 0.1);
+  --priority-low-text: #34d399;
 }
 
 @layer base {
@@ -124,6 +219,10 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   html {
     @apply font-sans;
@@ -139,11 +238,11 @@
   }
 }
 
-/* Thin scrollbar */
+/* Thin scrollbar — uses semantic tokens for theme awareness */
 .overflow-x-auto,
 .overflow-y-auto {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  scrollbar-color: var(--border) transparent;
 }
 
 .overflow-x-auto::-webkit-scrollbar,
@@ -159,11 +258,11 @@
 
 .overflow-x-auto::-webkit-scrollbar-thumb,
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--border);
   border-radius: 9999px;
 }
 
 .overflow-x-auto::-webkit-scrollbar-thumb:hover,
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.18);
+  background-color: var(--muted-foreground);
 }
