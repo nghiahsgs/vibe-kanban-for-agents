@@ -107,6 +107,7 @@ export function KanbanBoard({ boardSlug }: KanbanBoardProps) {
               label={col.label}
               tasks={groupedTasks[col.id]}
               onTaskClick={setSelectedTaskId}
+              totalTasks={filteredTasks.length}
             />
           ))}
         </div>
