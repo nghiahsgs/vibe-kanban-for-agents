@@ -44,10 +44,10 @@ export function BoardHeader({
     <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
       <BoardSwitcher currentBoardSlug={boardSlug} />
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-2">
         {/* Filter */}
         <Select value={filterAssignee ?? "all"} onValueChange={onFilterChange}>
-          <SelectTrigger className="w-[160px] h-8 text-xs">
+          <SelectTrigger size="sm" className="w-[160px] text-xs">
             <SelectValue placeholder="All assignees" />
           </SelectTrigger>
           <SelectContent>
@@ -67,31 +67,25 @@ export function BoardHeader({
           <Button
             variant="outline"
             size="sm"
-            className="h-8 gap-1.5 text-xs"
             onClick={() => setIsAgentOpen(true)}
           >
-            <Bot className="h-3.5 w-3.5" />
+            <Bot className="size-3.5" />
             Agents
           </Button>
         )}
         <Button
           variant="ghost"
-          size="icon"
-          className="h-8 w-8"
+          size="icon-sm"
           onClick={toggleTheme}
           aria-label="Toggle dark mode"
         >
-          {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+          {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
         </Button>
 
         <div className="w-px h-5 bg-border mx-1" />
 
         {/* Primary CTA + Account */}
-        <Button
-          onClick={onNewTask}
-          size="sm"
-          className="h-8 px-3 text-xs font-semibold"
-        >
+        <Button onClick={onNewTask} size="sm">
           + New Task
         </Button>
         <UserMenu />
