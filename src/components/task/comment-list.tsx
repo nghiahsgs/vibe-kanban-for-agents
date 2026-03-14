@@ -47,9 +47,9 @@ export function CommentList({ taskId }: CommentListProps) {
   }
 
   return (
-    <div className="space-y-4 max-h-64 overflow-y-auto">
+    <div className="space-y-4 max-h-64 overflow-y-auto" role="list" aria-label="Comments">
       {comments.map((comment) => (
-        <div key={comment.id} className="flex gap-3">
+        <div key={comment.id} className="flex gap-3" role="listitem">
           {/* Avatar */}
           <div
             className={`h-8 w-8 rounded-full flex items-center justify-center text-white text-xs font-semibold shrink-0 ${getInitialsColor(comment.author)}`}

@@ -41,7 +41,7 @@ export function BoardHeader({
   }
 
   return (
-    <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
+    <div className="flex items-center justify-between flex-wrap gap-y-3 mb-6 pb-4 border-b border-border">
       <BoardSwitcher currentBoardSlug={boardSlug} />
 
       <div className="flex items-center gap-2">

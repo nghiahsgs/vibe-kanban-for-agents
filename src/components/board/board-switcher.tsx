@@ -35,7 +35,7 @@ export function BoardSwitcher({ currentBoardSlug }: BoardSwitcherProps) {
           className="flex items-center gap-2 h-9 px-2 rounded-lg font-bold text-xl tracking-tight hover:bg-accent transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Kanban className="h-5 w-5 text-foreground shrink-0" />
-          <span className="max-w-[240px] truncate">{displayName}</span>
+          <span className="max-w-[min(240px,50vw)] truncate">{displayName}</span>
           <ChevronDown className="h-4 w-4 text-muted-foreground/70 shrink-0" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56">
