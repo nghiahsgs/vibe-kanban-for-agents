@@ -4,10 +4,7 @@ import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -20,12 +17,19 @@ import {
 import { useCreateTask, useUpdateTask } from "@/hooks/use-tasks";
 import { useAgents } from "@/hooks/use-agents";
 import { toast } from "sonner";
+import { X, FileText, AlignLeft, Flag, User, FolderOpen } from "lucide-react";
 import type { Task } from "@/types";
+
+const PRIORITIES = [
+  { value: "low", label: "Low", dot: "bg-green-500", color: "border-green-500/50 bg-green-500/10 text-green-400" },
+  { value: "medium", label: "Medium", dot: "bg-amber-500", color: "border-amber-500/50 bg-amber-500/10 text-amber-400" },
+  { value: "high", label: "High", dot: "bg-orange-500", color: "border-orange-500/50 bg-orange-500/10 text-orange-400" },
+];
 
 interface TaskFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  task?: Task | null; // If provided, edit mode
+  task?: Task | null;
   boardSlug?: string;
 }
 
@@ -42,7 +46,6 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskForm
   const [priority, setPriority] = useState("medium");
   const [workingDirectory, setWorkingDirectory] = useState("");
 
-  // Pre-fill form when editing
   useEffect(() => {
     if (task) {
       setTitle(task.title);
@@ -52,12 +55,8 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskForm
       setPriority(task.priority);
       setWorkingDirectory(task.workingDirectory || "");
     } else {
-      setTitle("");
-      setDescription("");
-      setStatus("todo");
-      setAssignee("");
-      setPriority("medium");
-      setWorkingDirectory("");
+      setTitle(""); setDescription(""); setStatus("todo");
+      setAssignee(""); setPriority("medium"); setWorkingDirectory("");
     }
   }, [task, open]);
 
@@ -75,22 +74,13 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskForm
     };
 
     if (isEdit) {
-      updateTask.mutate(
-        { id: task!.id, ...body },
-        {
-          onSuccess: () => {
-            toast.success("Task updated");
-            onOpenChange(false);
-          },
-          onError: () => toast.error("Failed to update task"),
-        }
-      );
+      updateTask.mutate({ id: task!.id, ...body }, {
+        onSuccess: () => { toast.success("Task updated"); onOpenChange(false); },
+        onError: () => toast.error("Failed to update task"),
+      });
     } else {
       createTask.mutate(body, {
-        onSuccess: () => {
-          toast.success("Task created");
-          onOpenChange(false);
-        },
+        onSuccess: () => { toast.success("Task created"); onOpenChange(false); },
         onError: () => toast.error("Failed to create task"),
       });
     }
@@ -100,48 +90,68 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskForm
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Task" : "New Task"}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+      <DialogContent showCloseButton={false} className="sm:max-w-lg p-0">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#1e2a3d]">
+          <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">
+            <FileText size={16} className="text-slate-500" />
+            {isEdit ? "Edit Task" : "New Task"}
+          </h2>
+          <button
+            onClick={() => onOpenChange(false)}
+            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
           {/* Title */}
-          <div className="space-y-1.5">
-            <label htmlFor="task-title" className="text-sm font-medium">
-              Title <span className="text-destructive">*</span>
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+              Title
             </label>
-            <Input
-              id="task-title"
-              placeholder="Enter task title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
+            <Input placeholder="Task title..." value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
           </div>
 
           {/* Description */}
-          <div className="space-y-1.5">
-            <label htmlFor="task-description" className="text-sm font-medium">
-              Description
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <AlignLeft size={11} /> Description
             </label>
-            <Textarea
-              id="task-description"
-              placeholder="Add a description..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-              className="resize-none"
-            />
+            <Textarea placeholder="Add more context..." value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
           </div>
 
-          {/* Status + Priority */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <label htmlFor="task-status" className="text-sm font-medium">Status</label>
+          {/* Priority selector — grid buttons like reference */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Flag size={11} /> Priority
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {PRIORITIES.map(p => (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => setPriority(p.value)}
+                  className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl border text-xs font-semibold transition-all ${
+                    priority === p.value ? p.color + " scale-[1.02]" : "bg-white/5 border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-400"
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${p.dot}`} />
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Status + Assignee row */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                Status
+              </label>
               <Select value={status} onValueChange={(v) => v && setStatus(v)}>
-                <SelectTrigger id="task-status">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todo">Todo</SelectItem>
                   <SelectItem value="in_progress">In Progress</SelectItem>
@@ -150,76 +160,50 @@ export function TaskFormDialog({ open, onOpenChange, task, boardSlug }: TaskForm
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-1.5">
-              <label htmlFor="task-priority" className="text-sm font-medium">Priority</label>
-              <Select value={priority} onValueChange={(v) => v && setPriority(v)}>
-                <SelectTrigger id="task-priority">
-                  <SelectValue placeholder="Priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-              </Select>
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                <User size={11} /> Assignee
+              </label>
+              {agents.length > 0 ? (
+                <Select value={assignee || "unassigned"} onValueChange={(v) => setAssignee(v === "unassigned" ? "" : (v ?? ""))}>
+                  <SelectTrigger><SelectValue placeholder="Select agent" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unassigned">Unassigned</SelectItem>
+                    {agents.map((a) => <SelectItem key={a.id} value={a.name}>{a.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input placeholder="e.g. claude-agent" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+              )}
             </div>
           </div>
 
-          {/* Assignee */}
-          <div className="space-y-1.5">
-            <label htmlFor="task-assignee" className="text-sm font-medium">Assignee</label>
-            {agents.length > 0 ? (
-              <Select value={assignee || "unassigned"} onValueChange={(v) => setAssignee(v === "unassigned" ? "" : (v ?? ""))}>
-                <SelectTrigger id="task-assignee">
-                  <SelectValue placeholder="Select agent" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="unassigned">Unassigned</SelectItem>
-                  {agents.map((a) => (
-                    <SelectItem key={a.id} value={a.name}>{a.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <Input
-                id="task-assignee"
-                placeholder="e.g. claude-agent (create agents in Agent Management)"
-                value={assignee}
-                onChange={(e) => setAssignee(e.target.value)}
-              />
-            )}
-            <p className="text-xs text-muted-foreground">
-              Create agents via Agents button in the header
-            </p>
-          </div>
-
           {/* Working Directory */}
-          <div className="space-y-1.5">
-            <label htmlFor="task-working-dir" className="text-sm font-medium">
-              Working Directory
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <FolderOpen size={11} /> Working Directory
             </label>
-            <Input
-              id="task-working-dir"
-              placeholder="/path/to/project (default: ~)"
-              value={workingDirectory}
-              onChange={(e) => setWorkingDirectory(e.target.value)}
-            />
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={isPending || !title.trim()}
-              className="font-semibold"
-            >
-              {isPending ? "Saving..." : isEdit ? "Save changes" : "Create task"}
-            </Button>
+            <Input placeholder="/path/to/project (default: ~)" value={workingDirectory} onChange={(e) => setWorkingDirectory(e.target.value)} />
           </div>
         </form>
+
+        {/* Footer buttons */}
+        <div className="flex gap-3 px-6 pb-6">
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="flex-1 py-2.5 px-4 bg-white/5 text-slate-400 rounded-xl text-sm font-medium hover:bg-white/10 hover:text-slate-300 transition-colors border border-white/10"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={isPending || !title.trim()}
+            className="flex-1 py-2.5 px-4 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {isPending ? "Saving..." : isEdit ? "Save Changes" : "Create Task"}
+          </button>
+        </div>
       </DialogContent>
     </Dialog>
   );
